@@ -1,6 +1,10 @@
 import { loadHeaderFooter } from "./utils.mjs";
 import "./router.js";
 import { initializeSearch } from "./search.js";
+import { fetchJSON } from "./fetchWrapper.js";
+
+// Make fetchJSON available globally for components
+window.fetchJSON = fetchJSON;
 
 // Function to initialize the application
 async function init() {
