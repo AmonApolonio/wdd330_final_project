@@ -12,17 +12,24 @@ export async function loadTemplate(path) {
 }
 
 export async function loadHeaderFooter() {
-  const headerTemplate = await loadTemplate("/partials/header.html");
-  const footerTemplate = await loadTemplate("/partials/footer.html");
+  try {
+    const headerTemplate = await loadTemplate("/partials/header.html");
+    const footerTemplate = await loadTemplate("/partials/footer.html");
 
-  const headerElement = document.querySelector("#main-header");
-  const footerElement = document.querySelector("#main-footer");
+    const headerElement = document.querySelector("#main-header");
+    const footerElement = document.querySelector("#main-footer");
 
-  if (headerElement) {
-    renderWithTemplate(headerTemplate, headerElement);
-  }
-  if (footerElement) {
-    renderWithTemplate(footerTemplate, footerElement);
+    if (headerElement) {
+      renderWithTemplate(headerTemplate, headerElement);
+    }
+    if (footerElement) {
+      renderWithTemplate(footerTemplate, footerElement);
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error loading header/footer:", error);
+    return { success: false, error };
   }
 }
 
