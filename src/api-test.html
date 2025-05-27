@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jikan API Test</title>
+  <link rel="stylesheet" href="/css/style.css" />  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #4e68f5;
+    }
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #4e68f5;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #3951e0;
+    }
+    input {
+      padding: 8px;
+      margin-right: 10px;
+      width: 300px;
+    }
+    pre {
+      background-color: #f4f4f4;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .error {
+      color: red;
+    }
+    
+    /* Dark theme specific styles */
+    .dark-theme {
+      background-color: #121212;
+      color: #e4e4e4;
+    }
+    .dark-theme h1 {
+      color: #6e88ff;
+    }
+    .dark-theme .test-section {
+      border-color: #444;
+      background-color: #1e1e1e;
+    }
+    .dark-theme input {
+      background-color: #333;
+      color: #e4e4e4;
+      border: 1px solid #555;
+    }
+    .dark-theme pre {
+      background-color: #2d2d2d;
+      color: #e4e4e4;
+    }
+    .dark-theme .error {
+      color: #ff6b6b;
+    }
+    
+    /* Back to main site button */
+    .back-link {
+      display: block;
+      margin-bottom: 20px;
+      color: #4e68f5;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .dark-theme .back-link {
+      color: #6e88ff;
+    }
+  </style>
+</head>
+<body>
+  <a href="/" class="back-link">← Back to Main Site</a>
+  <h1>Jikan API Test</h1>
+  
+  <div class="test-section">
+    <h2>Search Anime</h2>
+    <div>
+      <input type="text" id="search-input" placeholder="Enter anime title">
+      <button id="search-button">Search Anime</button>
+    </div>
+    <div id="search-result"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Currently Airing Anime</h2>
+    <button id="seasons-now-button">Get Current Season</button>
+    <div id="seasons-result"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Get Anime Details</h2>
+    <div>
+      <input type="number" id="anime-id-input" placeholder="Enter anime ID">
+      <button id="get-anime-button">Get Anime Details</button>
+    </div>
+    <div id="anime-result"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Random Anime</h2>
+    <button id="random-anime-button">Get Random Anime</button>
+    <div id="random-result"></div>
+  </div>
+    <script type="module">
+    import { searchAnime, getSeasonsNow, getAnimeFull, getRandomAnime } from './js/api/jikan.js';
+    import { applySavedTheme } from './js/theme.js';
+    
+    // Apply saved theme when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      applySavedTheme();
+    });
+    
+    // Search anime
+    document.getElementById('search-button').addEventListener('click', async () => {
+      const query = document.getElementById('search-input').value.trim();
+      const resultDiv = document.getElementById('search-result');
+      
+      if (!query) {
+        resultDiv.innerHTML = '<p class="error">Please enter a search term</p>';
+        return;
+      }
+      
+      resultDiv.innerHTML = '<p>Loading...</p>';
+      
+      try {
+        const result = await searchAnime(query);
+        resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+      }
+    });
+    
+    // Get current season
+    document.getElementById('seasons-now-button').addEventListener('click', async () => {
+      const resultDiv = document.getElementById('seasons-result');
+      resultDiv.innerHTML = '<p>Loading...</p>';
+      
+      try {
+        const result = await getSeasonsNow();
+        resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+      }
+    });
+    
+    // Get anime details
+    document.getElementById('get-anime-button').addEventListener('click', async () => {
+      const animeId = document.getElementById('anime-id-input').value.trim();
+      const resultDiv = document.getElementById('anime-result');
+      
+      if (!animeId) {
+        resultDiv.innerHTML = '<p class="error">Please enter an anime ID</p>';
+        return;
+      }
+      
+      resultDiv.innerHTML = '<p>Loading...</p>';
+      
+      try {
+        const result = await getAnimeFull(animeId);
+        resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+      }
+    });
+    
+    // Get random anime
+    document.getElementById('random-anime-button').addEventListener('click', async () => {
+      const resultDiv = document.getElementById('random-result');
+      resultDiv.innerHTML = '<p>Loading...</p>';
+      
+      try {
+        const result = await getRandomAnime();
+        resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
