@@ -17,6 +17,10 @@ const routes = {
     viewModule: 'MyListView',
     fallback: renderMyList 
   },
+  '#/quotes': {
+    viewModule: 'QuotesView',
+    fallback: renderQuotes
+  },
   '#/settings': { 
     viewModule: 'SettingsView',
     fallback: renderSettings 
@@ -158,6 +162,44 @@ function renderMyList() {
           <!-- My list will be loaded here -->
           <p>Your saved anime will appear here</p>
         </div>
+      </section>
+    `;
+  }
+}
+
+function renderQuotes() {
+  const appElement = document.getElementById("app");
+  if (appElement) {
+    appElement.innerHTML = `
+      <section class="quotes-view">
+        <h1>Anime Quotes</h1>
+        <div class="quotes-filters">
+          <div class="filter-inputs">
+            <div class="filter-group">
+              <label for="character-filter">Character:</label>
+              <input type="text" id="character-filter" placeholder="Filter by character">
+            </div>
+            
+            <div class="filter-group">
+              <label for="show-filter">Anime:</label>
+              <input type="text" id="show-filter" placeholder="Filter by anime">
+            </div>
+            
+            <div class="filter-group checkbox">
+              <input type="checkbox" id="random-filter">
+              <label for="random-filter">Random Quote</label>
+            </div>
+          </div>
+          
+          <button id="apply-filters" class="primary-btn">Apply Filters</button>
+          <button id="random-quote-btn" class="secondary-btn">Get Random Quote</button>
+        </div>
+        
+        <div class="quotes-container" id="quotes-container">
+          <p>Loading quotes...</p>
+        </div>
+        
+        <div class="quotes-pagination" id="quotes-pagination"></div>
       </section>
     `;
   }

@@ -9,6 +9,7 @@ import "./views/HomeView.js";
 import "./views/SearchView.js";
 import "./views/DetailView.js";
 import "./views/MyListView.js";
+import "./views/QuotesView.js";
 import "./views/SettingsView.js";
 
 // Make fetchJSON available globally for components
