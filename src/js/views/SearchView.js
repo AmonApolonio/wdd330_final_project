@@ -4,20 +4,37 @@ import { getSearchQuery } from '../search.js';
 class SearchView {
   /**
    * Render the search results view
-   */
-  async render() {
-    // Container is already rendered by router.js
-    const query = getSearchQuery();
-    
-    // If there's a search query, perform the search
-    if (query) {
-      this.performSearch(query);
-    } else {
-      // If no query, show a message
-      const searchResultsContainer = document.getElementById('search-results-container');
-      searchResultsContainer.innerHTML = `
-        <p>Enter a search term in the search bar above to find anime</p>
-      `;
+   */  async render() {
+    // Make sure the necessary container structure exists
+    const appElement = document.getElementById("app");
+    if (appElement) {
+      // Ensure the search view structure is in place
+      if (!document.getElementById('search-results-container')) {
+        appElement.innerHTML = `
+          <section class="search-view">
+            <h1>Search Anime</h1>
+            <div class="search-results" id="search-results-container">
+              <!-- Search results will be loaded here -->
+              <p>Use the search bar above to find anime</p>
+            </div>
+          </section>
+        `;
+      }
+
+      const query = getSearchQuery();
+      
+      // If there's a search query, perform the search
+      if (query) {
+        this.performSearch(query);
+      } else {
+        // If no query, show a message
+        const searchResultsContainer = document.getElementById('search-results-container');
+        if (searchResultsContainer) {
+          searchResultsContainer.innerHTML = `
+            <p>Enter a search term in the search bar above to find anime</p>
+          `;
+        }
+      }
     }
   }
   
@@ -25,9 +42,15 @@ class SearchView {
    * Perform an anime search and display results
    * @param {string} query - Search query
    * @param {number} page - Page number (default: 1)
-   */
-  async performSearch(query, page = 1) {
+   */  async performSearch(query, page = 1) {
     const searchResultsContainer = document.getElementById('search-results-container');
+    
+    // Check if container exists, if not render the view again
+    if (!searchResultsContainer) {
+      console.error('Search results container not found. Re-rendering view.');
+      this.render();
+      return;
+    }
     
     try {
       // Show loading state

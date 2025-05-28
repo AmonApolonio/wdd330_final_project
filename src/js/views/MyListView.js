@@ -3,15 +3,36 @@ class MyListView {
    * Render the My Anime List view
    */
   async render() {
-    // Container is already rendered by router.js
-    this.loadMyList();
+    // Make sure the container is properly initialized
+    const appElement = document.getElementById("app");
+    if (appElement) {
+      appElement.innerHTML = `
+        <section class="my-list-view">
+          <h1>My Anime List</h1>
+          <div class="my-list-container" id="my-list-container">
+            <!-- My list will be loaded here -->
+            <p>Your saved anime will appear here</p>
+          </div>
+        </section>
+      `;
+      
+      // Now load the list after ensuring the container exists
+      this.loadMyList();
+    }
   }
   
   /**
    * Load and display the user's saved anime list
-   */
-  loadMyList() {
+   */  loadMyList() {
     const myListContainer = document.getElementById('my-list-container');
+    
+    // Check if the container exists
+    if (!myListContainer) {
+      console.error('My list container not found. Re-rendering view.');
+      // Re-render the view to create the container first
+      this.render();
+      return;
+    }
     
     try {
       // Get saved list from localStorage

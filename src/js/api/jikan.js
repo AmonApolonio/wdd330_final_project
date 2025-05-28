@@ -50,3 +50,62 @@ export function getRandomAnime() {
 export function getAnimeFull(id) {
   return fetchJSON(`${API_BASE_URL}/${API_VERSION}/anime/${id}/full`);
 }
+
+/**
+ * Get top anime based on different filters
+ * @param {Object} options - Query parameters
+ * @param {string} options.type - Type of anime (tv, movie, ova, special, ona, music)
+ * @param {string} options.filter - Filter (airing, upcoming, bypopularity, favorite)
+ * @param {number} options.page - Page number
+ * @param {number} options.limit - Number of results (default: 25, max: 25)
+ * @returns {Promise<Object>} - Top anime results
+ */
+export function getTopAnime(options = {}) {
+  // Build query string from options
+  const queryParams = [];
+  
+  if (options.type) queryParams.push(`type=${options.type}`);
+  if (options.filter) queryParams.push(`filter=${options.filter}`);
+  if (options.page) queryParams.push(`page=${options.page}`);
+  if (options.limit) queryParams.push(`limit=${options.limit}`);
+  
+  const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+  
+  return fetchJSON(`${API_BASE_URL}/${API_VERSION}/top/anime${queryString}`);
+}
+
+/**
+ * Get trending anime (most popular currently)
+ * @param {number} limit - Number of results to return (default: 10, max: 25)
+ * @returns {Promise<Object>} - Trending anime results
+ */
+export function getTrendingAnime(limit = 10) {
+  return getTopAnime({
+    filter: 'bypopularity',
+    limit: Math.min(limit, 25)  // Ensure we don't exceed API limit
+  });
+}
+
+/**
+ * Get top airing anime
+ * @param {number} limit - Number of results to return (default: 10, max: 25)
+ * @returns {Promise<Object>} - Top airing anime results
+ */
+export function getTopAiringAnime(limit = 10) {
+  return getTopAnime({
+    filter: 'airing',
+    limit: Math.min(limit, 25)  // Ensure we don't exceed API limit
+  });
+}
+
+/**
+ * Get top upcoming anime
+ * @param {number} limit - Number of results to return (default: 10, max: 25)
+ * @returns {Promise<Object>} - Top upcoming anime results
+ */
+export function getUpcomingAnime(limit = 10) {
+  return getTopAnime({
+    filter: 'upcoming',
+    limit: Math.min(limit, 25)  // Ensure we don't exceed API limit
+  });
+}

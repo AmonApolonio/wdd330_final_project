@@ -1,0 +1,41 @@
+/* Styling for the trending carousel section */
+#trending-carousel-container {
+  margin: 20px 0 30px;
+}
+
+.home-view h2 {
+  margin-top: 25px;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.6rem;
+}
+
+.dark-theme .home-view h2 {
+  color: #e4e4e4;
+}
+
+/* Carousel dark theme styles */
+.dark-theme .carousel {
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .carousel-title-overlay {
+  background: rgba(30, 30, 30, 0.8);
+}
+
+.dark-theme .carousel-control {
+  background: rgba(60, 60, 60, 0.5);
+  color: #e4e4e4;
+}
+
+.dark-theme .carousel-control:hover {
+  background: rgba(80, 80, 80, 0.8);
+}
+
+.dark-theme .carousel-indicator {
+  background: rgba(200, 200, 200, 0.3);
+}
+
+.dark-theme .carousel-indicator.active {
+  background: rgba(200, 200, 200, 0.8);
+}

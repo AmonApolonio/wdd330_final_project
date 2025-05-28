@@ -97,28 +97,27 @@ function navigate(hash) {
 // Make navigate function available globally
 window.navigate = navigate;
 
-// Set up event listeners
+// Set up event listener for hash changes
 window.addEventListener('hashchange', router);
-window.addEventListener('DOMContentLoaded', () => {
-  // Initialize the router
-  router();
-});
 
 function renderHome() {
   const appElement = document.getElementById("app");
   if (appElement) {
+    console.log("Fallback renderHome function called");
     appElement.innerHTML = `
       <section class="home-view">
         <h1>Welcome to Anime Browse</h1>
-        <div class="featured-anime">
-          <h2>Featured Anime</h2>
-          <div class="anime-grid" id="featured-container">
-            <!-- Featured anime will be loaded here -->
-            <p>Loading featured anime...</p>
-          </div>
-        </div>
+        <p>Loading home view content...</p>
       </section>
     `;
+    
+    // If HomeView is now available (might have loaded after initial check), use it
+    setTimeout(() => {
+      if (window.HomeView && typeof window.HomeView.render === 'function') {
+        console.log("Retrying with HomeView after delay");
+        window.HomeView.render();
+      }
+    }, 100);
   }
 }
 

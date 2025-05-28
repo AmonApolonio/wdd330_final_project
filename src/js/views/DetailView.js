@@ -1,27 +1,48 @@
 import { getAnimeFull } from '../api/jikan.js';
 
-class DetailView {
-  /**
+class DetailView {  /**
    * Render the anime detail view
    * @param {string|number} id - The anime ID
    */
   async render(id) {
-    // Container is already rendered by router.js
-    if (id) {
-      this.loadAnimeDetails(id);
-    } else {
-      // If no ID provided, show error
-      const detailContainer = document.getElementById('anime-detail-container');
-      detailContainer.innerHTML = '<p>No anime ID provided. Please go back and select an anime.</p>';
+    const appElement = document.getElementById("app");
+    // First ensure the container exists
+    if (appElement) {
+      appElement.innerHTML = `
+        <section class="detail-view">
+          <h1>Anime Details</h1>
+          <div class="anime-detail" id="anime-detail-container" data-id="${id || ''}">
+            <!-- Anime details will be loaded here -->
+            <p>Loading anime details...</p>
+          </div>
+        </section>
+      `;
+      
+      // Now load the details after ensuring the container exists
+      if (id) {
+        this.loadAnimeDetails(id);
+      } else {
+        // If no ID provided, show error
+        const detailContainer = document.getElementById('anime-detail-container');
+        if (detailContainer) {
+          detailContainer.innerHTML = '<p>No anime ID provided. Please go back and select an anime.</p>';
+        }
+      }
     }
   }
-  
-  /**
+    /**
    * Load and display the anime details
    * @param {string|number} id - The anime ID
    */
   async loadAnimeDetails(id) {
     const detailContainer = document.getElementById('anime-detail-container');
+    
+    // Check if container exists, if not create it
+    if (!detailContainer) {
+      console.error('Anime detail container not found. Re-rendering view.');
+      this.render(id);
+      return;
+    }
     
     try {
       // Show loading state
