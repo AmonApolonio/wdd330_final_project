@@ -1,6 +1,5 @@
 import { getSeasonsNow, getRandomAnime, getTrendingAnime, getTopAiringAnime } from '../api/jikan.js';
 import Carousel from '../ui/components/Carousel.js';
-import SeasonGrid from '../ui/components/SeasonGrid.js';
 
 class HomeView {
   constructor() {
@@ -23,7 +22,6 @@ class HomeView {
       console.log("Loading home view content");
       await this.loadTrendingCarousel();
       await this.loadFeaturedAnime();
-      await this.loadSeasonalAnime();
     } else {
       console.error("Failed to set up home view structure, cannot render content");
     }
@@ -62,15 +60,6 @@ class HomeView {
               <p>Loading popular anime...</p>
             </div>
           </div>
-          
-          <!-- Seasonal anime section -->
-          <div class="season-anime">
-            <h2>Seasonal Anime</h2>
-            <div id="season-grid-container">
-              <!-- Seasonal anime grid will be loaded here -->
-              <p>Loading seasonal anime...</p>
-            </div>
-          </div>
         </section>
       `;
       
@@ -81,7 +70,6 @@ class HomeView {
     // Verify that required elements exist after potentially creating them
     const trendingContainer = document.getElementById('trending-carousel-container');
     const featuredContainer = document.getElementById('featured-container');
-    const seasonContainer = document.getElementById('season-grid-container');
     
     if (!trendingContainer) {
       console.error('Trending carousel container not found');
@@ -90,11 +78,6 @@ class HomeView {
     
     if (!featuredContainer) {
       console.error('Featured container not found');
-      return false;
-    }
-    
-    if (!seasonContainer) {
-      console.error('Season grid container not found');
       return false;
     }
     
@@ -280,68 +263,6 @@ class HomeView {
       if (retryButton) {
         retryButton.addEventListener('click', () => {
           this.loadFeaturedAnime();
-        });
-      }
-    }
-  }
-  /**
-   * Load seasonal anime grid
-   */  async loadSeasonalAnime() {
-    const seasonContainer = document.getElementById('season-grid-container');
-    
-    if (!seasonContainer) {
-      console.error('Season grid container not found');
-      return;
-    }
-    
-    try {
-      // Display loading state
-      seasonContainer.innerHTML = '<p>Loading seasonal anime...</p>';
-      
-      // Fetch currently airing anime
-      const response = await getSeasonsNow();
-        // Check if we have data
-      if (response && response.data && response.data.length > 0) {
-        // Filter out any anime that are already displayed in other sections
-        const seasonalItems = response.data
-          .filter(anime => !this.displayedAnimeIds.has(anime.mal_id))
-          .slice(0, 16); // Limit to 16 items for the seasonal grid
-        
-        // Filter out anime with duplicate titles
-        const uniqueTitles = new Set();
-        const uniqueSeasonalAnime = seasonalItems.filter(anime => {
-          if (uniqueTitles.has(anime.title)) return false;
-          uniqueTitles.add(anime.title);
-          return true;
-        });
-        
-        if (uniqueSeasonalAnime.length > 0) {
-          // Track these anime as displayed
-          uniqueSeasonalAnime.forEach(anime => this.displayedAnimeIds.add(anime.mal_id));
-          
-          // Use the SeasonGrid component to render the grid
-          SeasonGrid(seasonContainer, uniqueSeasonalAnime, this.createAnimeCard.bind(this));
-        } else {
-          // If all seasonal anime were already displayed, show message
-          seasonContainer.innerHTML = '<p>No additional seasonal anime available.</p>';
-        }
-      } else {
-        seasonContainer.innerHTML = '<p>No seasonal anime available.</p>';
-      }
-    } catch (error) {
-      console.error('Error loading seasonal anime grid:', error);
-      seasonContainer.innerHTML = `
-        <div class="error-message">
-          <p>Failed to load seasonal anime.</p>
-          <button id="retry-seasonal" class="retry-btn">Retry</button>
-        </div>
-      `;
-      
-      // Add retry functionality
-      const retryButton = document.getElementById('retry-seasonal');
-      if (retryButton) {
-        retryButton.addEventListener('click', () => {
-          this.loadSeasonalAnime();
         });
       }
     }
