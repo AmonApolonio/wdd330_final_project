@@ -3,19 +3,27 @@ import Carousel from '../ui/components/Carousel.js';
 import SeasonGrid from '../ui/components/SeasonGrid.js';
 
 class HomeView {
+  constructor() {
+    // Track anime IDs that have already been displayed to prevent duplicates
+    this.displayedAnimeIds = new Set();
+  }
+
   /**
    * Render the home view with currently airing anime
    */  async render() {
     console.log("HomeView render starting");
+    // Reset displayed anime tracking when rendering the home view
+    this.displayedAnimeIds = new Set();
+    
     // Make sure the home view structure is set up properly first
     const setupSuccess = this.setupHomeView();
     
     if (setupSuccess) {
       // Now load the content
       console.log("Loading home view content");
-      this.loadTrendingCarousel();
-      this.loadFeaturedAnime();
-      this.loadSeasonalAnime();
+      await this.loadTrendingCarousel();
+      await this.loadFeaturedAnime();
+      await this.loadSeasonalAnime();
     } else {
       console.error("Failed to set up home view structure, cannot render content");
     }
@@ -38,20 +46,20 @@ class HomeView {
       appElement.innerHTML = `
         <section class="home-view">
           <h1>Welcome to Anime Browse</h1>
-          <!-- Trending section with carousel container -->
+          <!-- Featured section with carousel container -->
           <div id="trending-section" class="trending-anime">
-            <h2>Trending Anime</h2>
+            <h2>Featured Anime</h2>
             <div id="trending-carousel-container">
-              <!-- Trending anime will be loaded here -->
-              <p>Loading trending anime...</p>
+              <!-- Featured anime carousel will be loaded here -->
+              <p>Loading featured anime...</p>
             </div>
           </div>
-          <!-- Featured anime section -->
+          <!-- Regular featured anime section (grid) -->
           <div class="featured-anime">
-            <h2>Featured Anime</h2>
+            <h2>Popular Anime</h2>
             <div id="featured-container">
-              <!-- Featured anime will be loaded here -->
-              <p>Loading featured anime...</p>
+              <!-- Popular anime will be loaded here -->
+              <p>Loading popular anime...</p>
             </div>
           </div>
           
@@ -91,11 +99,9 @@ class HomeView {
     }
     
     return true;
-  }
-  /**
+  }  /**
    * Load trending anime carousel
-   */
-  async loadTrendingCarousel() {
+   */  async loadTrendingCarousel() {
     // Get the carousel container
     const carouselContainer = document.getElementById('trending-carousel-container');
     
@@ -109,52 +115,75 @@ class HomeView {
       // Show loading state
       carouselContainer.innerHTML = '<p>Loading trending anime...</p>';
       
-      // Fetch trending anime data using our specialized function
-      const response = await getTrendingAnime(8);
+      // Fetch currently airing (featured) anime data instead of trending
+      const response = await getSeasonsNow();
       
       if (response && response.data && response.data.length > 0) {
         // Clear the loading message
         carouselContainer.innerHTML = '';
         
-        // Initialize the carousel with the trending items
-        Carousel(carouselContainer, response.data);
+        // Get anime items sorted by score to feature the best ones
+        const featuredItems = response.data
+          .sort((a, b) => (b.score || 0) - (a.score || 0))
+          .slice(0, 12); // Show more items since our carousel now displays multiple at once
+        
+        // Track displayed anime to avoid duplicates in other sections
+        featuredItems.forEach(anime => this.displayedAnimeIds.add(anime.mal_id));
+
+        // Filter out anime with duplicate titles
+        const uniqueTitles = new Set();
+        const filteredFeaturedItems = featuredItems.filter(anime => {
+          if (uniqueTitles.has(anime.title)) return false;
+          uniqueTitles.add(anime.title);
+          return true;
+        });
+
+        // Track displayed anime to avoid duplicates in other sections
+        filteredFeaturedItems.forEach(anime => this.displayedAnimeIds.add(anime.mal_id));
+        
+        // Initialize the carousel with the featured items
+        Carousel(carouselContainer, filteredFeaturedItems);
+        
+        // Update the section heading to reflect content
+        const trendingSection = document.getElementById('trending-section');
+        if (trendingSection) {
+          const heading = trendingSection.querySelector('h2');
+          if (heading) {
+            heading.textContent = 'Featured Anime';
+          }
+        }
       } else {
-        // Fallback to top airing anime if trending fails
+        // Fallback to trending anime if featured fails
         try {
-          const backupResponse = await getTopAiringAnime(8);
+          const backupResponse = await getTrendingAnime(12);
           if (backupResponse && backupResponse.data && backupResponse.data.length > 0) {
             // Clear previous message
             carouselContainer.innerHTML = '';
             
-            // Initialize carousel with airing items
+            // Initialize carousel with trending items
             Carousel(carouselContainer, backupResponse.data);
           } else {
-            // Final fallback to currently airing seasonal anime
-            const seasonalResponse = await getSeasonsNow();
-            if (seasonalResponse && seasonalResponse.data && seasonalResponse.data.length > 0) {
+            // Final fallback to top airing anime
+            const topAiringResponse = await getTopAiringAnime(12);
+            if (topAiringResponse && topAiringResponse.data && topAiringResponse.data.length > 0) {
               carouselContainer.innerHTML = '';
               
-              // Get the top items sorted by score
-              const seasonalItems = seasonalResponse.data
-                .sort((a, b) => (b.score || 0) - (a.score || 0))
-                .slice(0, 8);
-                
-              // Initialize carousel with seasonal items
-              Carousel(carouselContainer, seasonalItems);
+              // Initialize carousel with top airing items
+              Carousel(carouselContainer, topAiringResponse.data);
             } else {
-              carouselContainer.innerHTML = '<p>No trending anime available.</p>';
+              carouselContainer.innerHTML = '<p>No featured anime available.</p>';
             }
           }
         } catch (backupError) {
           console.error('Error loading backup anime data:', backupError);
-          carouselContainer.innerHTML = '<p>No trending anime available.</p>';
+          carouselContainer.innerHTML = '<p>No featured anime available.</p>';
         }
       }
     } catch (error) {
-      console.error('Error loading trending anime carousel:', error);
+      console.error('Error loading featured anime carousel:', error);
       carouselContainer.innerHTML = `
         <div class="error-message">
-          <p>Failed to load trending anime.</p>
+          <p>Failed to load featured anime.</p>
           <button id="retry-trending">Retry</button>
         </div>
       `;
@@ -167,11 +196,9 @@ class HomeView {
         });
       }
     }
-  }
-  /**
-   * Load featured anime (currently airing)
-   */
-  async loadFeaturedAnime() {
+  }  /**
+   * Load popular anime for the grid display
+   */  async loadFeaturedAnime() {
     const featuredContainer = document.getElementById('featured-container');
     
     if (!featuredContainer) {
@@ -181,27 +208,66 @@ class HomeView {
     
     try {
       // Display loading state
-      featuredContainer.innerHTML = '<p>Loading featured anime...</p>';
+      featuredContainer.innerHTML = '<p>Loading popular anime...</p>';
       
-      // Fetch currently airing anime
-      const response = await getSeasonsNow();
+      // Fetch popular anime using trending endpoint - different from the featured carousel
+      const response = await getTrendingAnime(20); // Request more to have enough after filtering duplicates
       
       // Check if we have data
       if (response && response.data && response.data.length > 0) {
-        // Use the first 12 items and make them a grid
-        const featuredAnime = response.data.slice(0, 12);
+        // Filter out any anime that are already displayed in other sections
+        const uniquePopularAnime = response.data.filter(anime => 
+          !this.displayedAnimeIds.has(anime.mal_id)
+        ).slice(0, 12); // Limit to 12 unique items
         
-        // Add the anime-grid class and populate with cards
-        featuredContainer.classList.add('anime-grid');
-        featuredContainer.innerHTML = featuredAnime
-          .map(anime => this.createAnimeCard(anime))
-          .join('');
+        if (uniquePopularAnime.length > 0) {
+          // Track these anime as displayed
+          uniquePopularAnime.forEach(anime => this.displayedAnimeIds.add(anime.mal_id));
+          
+          // Add the anime-grid class and populate with cards
+          featuredContainer.classList.add('anime-grid');
+          featuredContainer.innerHTML = uniquePopularAnime
+            .map(anime => this.createAnimeCard(anime))
+            .join('');
+        } else {
+          // If all trending anime were duplicates, try to get random anime instead
+          this.loadRandomAnime(featuredContainer);
+        }
       } else {
-        // If no results, try to get a random anime
-        this.loadRandomAnime(featuredContainer);
+        // If trending fails, fall back to seasonal anime but with different ones
+        try {
+          const seasonalResponse = await getSeasonsNow();
+          if (seasonalResponse && seasonalResponse.data && seasonalResponse.data.length > 0) {
+            // Filter out any anime that are already displayed in other sections
+            const uniqueSeasonalAnime = seasonalResponse.data
+              .sort((a, b) => (b.score || 0) - (a.score || 0))
+              .filter(anime => !this.displayedAnimeIds.has(anime.mal_id))
+              .slice(0, 12);
+              
+            if (uniqueSeasonalAnime.length > 0) {
+              // Track these anime as displayed
+              uniqueSeasonalAnime.forEach(anime => this.displayedAnimeIds.add(anime.mal_id));
+              
+              // Add the anime-grid class and populate with cards
+              featuredContainer.classList.add('anime-grid');
+              featuredContainer.innerHTML = uniqueSeasonalAnime
+                .map(anime => this.createAnimeCard(anime))
+                .join('');
+            } else {
+              // If still no unique anime, try to get a random anime
+              this.loadRandomAnime(featuredContainer);
+            }
+          } else {
+            // If no results, try to get a random anime
+            this.loadRandomAnime(featuredContainer);
+          }
+        } catch (backupError) {
+          console.error('Error loading backup anime data:', backupError);
+          this.loadRandomAnime(featuredContainer);
+        }
       }
     } catch (error) {
-      console.error('Error loading featured anime:', error);
+      console.error('Error loading popular anime:', error);
       featuredContainer.innerHTML = `
         <div class="error-message">
           <p>Failed to load anime data.</p>
@@ -218,11 +284,9 @@ class HomeView {
       }
     }
   }
-
   /**
    * Load seasonal anime grid
-   */
-  async loadSeasonalAnime() {
+   */  async loadSeasonalAnime() {
     const seasonContainer = document.getElementById('season-grid-container');
     
     if (!seasonContainer) {
@@ -236,14 +300,31 @@ class HomeView {
       
       // Fetch currently airing anime
       const response = await getSeasonsNow();
-      
-      // Check if we have data
+        // Check if we have data
       if (response && response.data && response.data.length > 0) {
-        // Get a different subset of anime than the featured section (next 16 after the first 12)
-        const seasonalAnime = response.data.slice(12, 28);
+        // Filter out any anime that are already displayed in other sections
+        const seasonalItems = response.data
+          .filter(anime => !this.displayedAnimeIds.has(anime.mal_id))
+          .slice(0, 16); // Limit to 16 items for the seasonal grid
         
-        // Use the SeasonGrid component to render the grid
-        SeasonGrid(seasonContainer, seasonalAnime, this.createAnimeCard.bind(this));
+        // Filter out anime with duplicate titles
+        const uniqueTitles = new Set();
+        const uniqueSeasonalAnime = seasonalItems.filter(anime => {
+          if (uniqueTitles.has(anime.title)) return false;
+          uniqueTitles.add(anime.title);
+          return true;
+        });
+        
+        if (uniqueSeasonalAnime.length > 0) {
+          // Track these anime as displayed
+          uniqueSeasonalAnime.forEach(anime => this.displayedAnimeIds.add(anime.mal_id));
+          
+          // Use the SeasonGrid component to render the grid
+          SeasonGrid(seasonContainer, uniqueSeasonalAnime, this.createAnimeCard.bind(this));
+        } else {
+          // If all seasonal anime were already displayed, show message
+          seasonContainer.innerHTML = '<p>No additional seasonal anime available.</p>';
+        }
       } else {
         seasonContainer.innerHTML = '<p>No seasonal anime available.</p>';
       }
@@ -263,25 +344,6 @@ class HomeView {
           this.loadSeasonalAnime();
         });
       }
-    }
-  }
-
-  /**
-   * Load a random anime as fallback
-   * @param {HTMLElement} container - Where to render the anime
-   */
-  async loadRandomAnime(container) {
-    try {
-      const response = await getRandomAnime();
-      
-      if (response && response.data) {
-        container.innerHTML = this.createAnimeCard(response.data);
-      } else {
-        container.innerHTML = '<p>No anime found. Please try again later.</p>';
-      }
-    } catch (error) {
-      console.error('Error loading random anime:', error);
-      container.innerHTML = '<p>Failed to load anime data.</p>';
     }
   }
 
