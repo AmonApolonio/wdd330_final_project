@@ -1,4 +1,3 @@
-
 /**
  * Initialize the search bar functionality
  */
@@ -35,6 +34,9 @@ function handleSearch() {
   const query = searchInput?.value?.trim();
   
   if (query) {
+    // Show loading spinner in the search input
+    showSearchLoadingSpinner();
+    
     // Store the search query in sessionStorage
     sessionStorage.setItem('animeSearchQuery', query);
     
@@ -47,6 +49,40 @@ function handleSearch() {
   } else {
     // Alert user if search is empty
     alert('Please enter a search term');
+  }
+}
+
+/**
+ * Show the loading spinner in the search input
+ */
+export function showSearchLoadingSpinner() {
+  const searchInput = document.getElementById('search-input');
+  const searchButton = document.getElementById('search-button');
+  
+  if (searchInput && searchButton) {
+    // Disable input and button during search
+    searchInput.disabled = true;
+    searchButton.disabled = true;
+    
+    // Add loading class to button
+    searchButton.innerHTML = '<div class="loading-spinner" style="width: 20px; height: 20px; border-width: 3px; margin: 0;"></div>';
+  }
+}
+
+/**
+ * Hide the loading spinner in the search input
+ */
+export function hideSearchLoadingSpinner() {
+  const searchInput = document.getElementById('search-input');
+  const searchButton = document.getElementById('search-button');
+  
+  if (searchInput && searchButton) {
+    // Re-enable input and button
+    searchInput.disabled = false;
+    searchButton.disabled = false;
+    
+    // Restore button text
+    searchButton.innerHTML = 'Search';
   }
 }
 

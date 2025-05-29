@@ -1,5 +1,5 @@
 import { searchAnime } from '../api/jikan.js';
-import { getSearchQuery } from '../search.js';
+import { getSearchQuery, hideSearchLoadingSpinner } from '../search.js';
 
 class SearchView {
   /**
@@ -34,6 +34,8 @@ class SearchView {
             <p>Enter a search term in the search bar above to find anime</p>
           `;
         }
+        // Make sure the spinner is hidden when no search is active
+        hideSearchLoadingSpinner();
       }
     }
   }
@@ -53,11 +55,19 @@ class SearchView {
     }
     
     try {
-      // Show loading state
-      searchResultsContainer.innerHTML = '<p>Searching for anime...</p>';
+      // Show loading state with spinner
+      searchResultsContainer.innerHTML = `
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <p>Searching for anime...</p>
+        </div>
+      `;
       
       // Perform search using the API
       const response = await searchAnime(query, page);
+      
+      // Hide the loading spinner in the search input when results come back
+      hideSearchLoadingSpinner();
       
       // If we have results, display them
       if (response && response.data && response.data.length > 0) {
@@ -100,6 +110,9 @@ class SearchView {
           <button id="retry-search">Retry</button>
         </div>
       `;
+      
+      // Hide the loading spinner in the search input on error
+      hideSearchLoadingSpinner();
       
       // Add retry functionality
       document.getElementById('retry-search').addEventListener('click', () => {
@@ -164,9 +177,14 @@ class SearchView {
     document.querySelectorAll('.pagination-btn').forEach(button => {
       button.addEventListener('click', () => {
         const page = parseInt(button.dataset.page, 10);
+        
+        // Show loading spinner when changing pages
+        const searchResultsContainer = document.getElementById('search-results-container');
+        if (searchResultsContainer) {
+          searchResultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
         this.performSearch(query, page);
-        // Scroll back to top of results
-        document.getElementById('search-results-container').scrollIntoView();
       });
     });
   }
