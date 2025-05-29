@@ -2,6 +2,11 @@ import { searchAnime } from '../api/jikan.js';
 import { getSearchQuery, hideSearchLoadingSpinner } from '../search.js';
 
 class SearchView {
+  constructor() {
+    // Cache for search results by query and page
+    this.resultsCache = {};
+  }
+
   /**
    * Render the search results view
    */  async render() {
@@ -41,6 +46,16 @@ class SearchView {
   }
   
   /**
+   * Generate a cache key for a search query and page
+   * @param {string} query - Search query
+   * @param {number} page - Page number
+   * @returns {string} - Cache key
+   */
+  getCacheKey(query, page) {
+    return `${query.toLowerCase()}_page${page}`;
+  }
+
+  /**
    * Perform an anime search and display results
    * @param {string} query - Search query
    * @param {number} page - Page number (default: 1)
@@ -54,17 +69,33 @@ class SearchView {
       return;
     }
     
+    // Create a cache key for this query and page
+    const cacheKey = this.getCacheKey(query, page);
+    
     try {
-      // Show loading state with spinner
-      searchResultsContainer.innerHTML = `
-        <div class="loading-container">
-          <div class="loading-spinner"></div>
-          <p>Searching for anime...</p>
-        </div>
-      `;
+      // Show loading state with spinner, but only if not using cached data
+      if (!this.resultsCache[cacheKey]) {
+        searchResultsContainer.innerHTML = `
+          <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Searching for anime...</p>
+          </div>
+        `;
+      }
       
-      // Perform search using the API
-      const response = await searchAnime(query, page);
+      // Check if we have cached results for this query and page
+      let response;
+      if (this.resultsCache[cacheKey]) {
+        console.log(`Using cached results for "${query}" page ${page}`);
+        response = this.resultsCache[cacheKey];
+      } else {
+        // Perform search using the API if no cached results
+        response = await searchAnime(query, page);
+        
+        // Cache the results for future use
+        this.resultsCache[cacheKey] = response;
+        console.log(`Cached search results for "${query}" page ${page}`);
+      }
       
       // Hide the loading spinner in the search input when results come back
       hideSearchLoadingSpinner();
@@ -116,6 +147,10 @@ class SearchView {
       
       // Add retry functionality
       document.getElementById('retry-search').addEventListener('click', () => {
+        // Remove failed query from cache when retrying
+        const cacheKey = this.getCacheKey(query, page);
+        delete this.resultsCache[cacheKey];
+        
         this.performSearch(query, page);
       });
     }
