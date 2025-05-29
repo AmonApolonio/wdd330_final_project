@@ -1,5 +1,6 @@
 import { getSeasonsNow, getRandomAnime, getTrendingAnime, getTopAiringAnime } from '../api/jikan.js';
 import Carousel from '../ui/components/Carousel.js';
+import SeasonGrid from '../ui/components/SeasonGrid.js';
 
 class HomeView {
   /**
@@ -14,6 +15,7 @@ class HomeView {
       console.log("Loading home view content");
       this.loadTrendingCarousel();
       this.loadFeaturedAnime();
+      this.loadSeasonalAnime();
     } else {
       console.error("Failed to set up home view structure, cannot render content");
     }
@@ -47,9 +49,18 @@ class HomeView {
           <!-- Featured anime section -->
           <div class="featured-anime">
             <h2>Featured Anime</h2>
-            <div class="anime-grid" id="featured-container">
+            <div id="featured-container">
               <!-- Featured anime will be loaded here -->
               <p>Loading featured anime...</p>
+            </div>
+          </div>
+          
+          <!-- Seasonal anime section -->
+          <div class="season-anime">
+            <h2>Seasonal Anime</h2>
+            <div id="season-grid-container">
+              <!-- Seasonal anime grid will be loaded here -->
+              <p>Loading seasonal anime...</p>
             </div>
           </div>
         </section>
@@ -62,6 +73,7 @@ class HomeView {
     // Verify that required elements exist after potentially creating them
     const trendingContainer = document.getElementById('trending-carousel-container');
     const featuredContainer = document.getElementById('featured-container');
+    const seasonContainer = document.getElementById('season-grid-container');
     
     if (!trendingContainer) {
       console.error('Trending carousel container not found');
@@ -70,6 +82,11 @@ class HomeView {
     
     if (!featuredContainer) {
       console.error('Featured container not found');
+      return false;
+    }
+    
+    if (!seasonContainer) {
+      console.error('Season grid container not found');
       return false;
     }
     
@@ -151,7 +168,6 @@ class HomeView {
       }
     }
   }
-
   /**
    * Load featured anime (currently airing)
    */
@@ -172,13 +188,14 @@ class HomeView {
       
       // Check if we have data
       if (response && response.data && response.data.length > 0) {
-        // Create HTML for the anime grid
-        const animeHTML = response.data
-          .slice(0, 12) // Limit to 12 items
+        // Use the first 12 items and make them a grid
+        const featuredAnime = response.data.slice(0, 12);
+        
+        // Add the anime-grid class and populate with cards
+        featuredContainer.classList.add('anime-grid');
+        featuredContainer.innerHTML = featuredAnime
           .map(anime => this.createAnimeCard(anime))
           .join('');
-        
-        featuredContainer.innerHTML = animeHTML;
       } else {
         // If no results, try to get a random anime
         this.loadRandomAnime(featuredContainer);
@@ -197,6 +214,53 @@ class HomeView {
       if (retryButton) {
         retryButton.addEventListener('click', () => {
           this.loadFeaturedAnime();
+        });
+      }
+    }
+  }
+
+  /**
+   * Load seasonal anime grid
+   */
+  async loadSeasonalAnime() {
+    const seasonContainer = document.getElementById('season-grid-container');
+    
+    if (!seasonContainer) {
+      console.error('Season grid container not found');
+      return;
+    }
+    
+    try {
+      // Display loading state
+      seasonContainer.innerHTML = '<p>Loading seasonal anime...</p>';
+      
+      // Fetch currently airing anime
+      const response = await getSeasonsNow();
+      
+      // Check if we have data
+      if (response && response.data && response.data.length > 0) {
+        // Get a different subset of anime than the featured section (next 16 after the first 12)
+        const seasonalAnime = response.data.slice(12, 28);
+        
+        // Use the SeasonGrid component to render the grid
+        SeasonGrid(seasonContainer, seasonalAnime, this.createAnimeCard.bind(this));
+      } else {
+        seasonContainer.innerHTML = '<p>No seasonal anime available.</p>';
+      }
+    } catch (error) {
+      console.error('Error loading seasonal anime grid:', error);
+      seasonContainer.innerHTML = `
+        <div class="error-message">
+          <p>Failed to load seasonal anime.</p>
+          <button id="retry-seasonal" class="retry-btn">Retry</button>
+        </div>
+      `;
+      
+      // Add retry functionality
+      const retryButton = document.getElementById('retry-seasonal');
+      if (retryButton) {
+        retryButton.addEventListener('click', () => {
+          this.loadSeasonalAnime();
         });
       }
     }
