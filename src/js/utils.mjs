@@ -21,6 +21,8 @@ export async function loadHeaderFooter() {
 
     if (headerElement) {
       renderWithTemplate(headerTemplate, headerElement);
+      // Initialize hamburger menu functionality after header is loaded
+      initHamburgerMenu();
     }
     if (footerElement) {
       renderWithTemplate(footerTemplate, footerElement);
@@ -30,6 +32,34 @@ export async function loadHeaderFooter() {
   } catch (error) {
     console.error("Error loading header/footer:", error);
     return { success: false, error };
+  }
+}
+
+function initHamburgerMenu() {
+  const menuToggle = document.getElementById('menu-toggle');
+  const mainNav = document.querySelector('.main-nav');
+  
+  if (menuToggle && mainNav) {
+    menuToggle.addEventListener('click', () => {
+      mainNav.classList.toggle('active');
+      menuToggle.classList.toggle('menu-active');
+      
+      // Update aria-expanded attribute for accessibility
+      const isExpanded = mainNav.classList.contains('active');
+      menuToggle.setAttribute('aria-expanded', isExpanded);
+    });
+    
+    // Close menu when a link is clicked
+    const navLinks = mainNav.querySelectorAll('a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          mainNav.classList.remove('active');
+          menuToggle.classList.remove('menu-active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
   }
 }
 

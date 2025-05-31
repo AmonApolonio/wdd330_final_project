@@ -769,15 +769,95 @@ h2 {
   background-color: #e33;
 }
 
+/* Hamburger Menu Styles */
+#menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 1000;
+}
+
+.hamburger-icon, 
+.hamburger-icon::before, 
+.hamburger-icon::after {
+  display: block;
+  background-color: #ff4500;
+  height: 3px;
+  width: 25px;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+}
+
+.hamburger-icon::before, 
+.hamburger-icon::after {
+  content: '';
+  position: absolute;
+}
+
+.hamburger-icon::before {
+  top: -8px;
+}
+
+.hamburger-icon::after {
+  top: 8px;
+}
+
+/* Animation for the hamburger icon when active */
+.menu-active .hamburger-icon {
+  background-color: transparent;
+}
+
+.menu-active .hamburger-icon::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.menu-active .hamburger-icon::after {
+  transform: rotate(-45deg);
+  top: 0;
+}
+
+/* Dark theme support for hamburger */
+.dark-theme .hamburger-icon, 
+.dark-theme .hamburger-icon::before, 
+.dark-theme .hamburger-icon::after {
+  background-color: #4e68f5;
+}
+
+.dark-theme .menu-active .hamburger-icon {
+  background-color: transparent;
+}
+
 /* Responsive styles */
 @media screen and (max-width: 768px) {
   .header-top {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 1rem;
+    position: relative;
   }
   
   #search-bar-container {
     width: 100%;
+    order: 3;
+  }
+  
+  #menu-toggle {
+    display: block;
+    position: absolute;
+    right: 2rem;
+    top: 1rem;
+  }
+  
+  .main-nav {
+    display: none;
+    width: 100%;
+  }
+  
+  .main-nav.active {
+    display: block;
   }
   
   .main-nav ul {
