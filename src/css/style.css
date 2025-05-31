@@ -387,6 +387,18 @@ h2 {
   margin: 0 0.25rem;
 }
 
+.pagination-info {
+  margin-left: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* Dark theme support for pagination info */
+.dark-theme .pagination-info {
+  color: #aaa;
+}
+
 /* Error Message Styles */
 .error-message {
   background-color: #fee;

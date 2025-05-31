@@ -10,6 +10,8 @@ import {
 class QuotesView {
   constructor() {
     this.currentPage = 1;
+    this.quotesPerPage = 18; // Display 18 quotes per page
+    this.allQuotes = []; // Store all fetched quotes for client-side pagination
     this.filters = {
       character: '',
       show: '',
@@ -192,10 +194,7 @@ class QuotesView {
         } else {
           quotes = await getAllQuotes(this.currentPage);
         }
-        
-        // Show pagination if we have quotes
-        this.renderPagination(paginationContainer, quotes);
-      }
+        }
       
       // Calculate API response time
       const responseTime = Date.now() - startTime;
@@ -205,8 +204,13 @@ class QuotesView {
         await new Promise(resolve => setTimeout(resolve, 300 - responseTime));
       }
       
-      // Render the quotes
+      // Render the quotes (this will also update this.allQuotes)
       this.renderQuotes(quotes, quotesContainer);
+      
+      // Now that allQuotes is set, we can show pagination
+      if (!random && paginationContainer) {
+        this.renderPagination(paginationContainer, quotes);
+      }
       
       // Display search summary if filters are applied
       if (character || show) {
@@ -304,10 +308,8 @@ class QuotesView {
         });
       }
     }
-  }
-
-  /**
-   * Render quotes to the container
+  }  /**
+   * Render quotes to the container with pagination
    * @param {Array|Object} quotes - The quotes to render
    * @param {HTMLElement} container - The container element
    */
@@ -318,11 +320,23 @@ class QuotesView {
       return;
     }
     
-    // Ensure quotes is an array
-    const quotesArray = Array.isArray(quotes) ? quotes : [quotes];
+    // Ensure quotes is an array and store all quotes for pagination
+    this.allQuotes = Array.isArray(quotes) ? quotes : [quotes];
     
-    // Create HTML for all quotes
-    const quotesHTML = quotesArray.map(quote => this.createQuoteCard(quote)).join('');
+    // Check if current page is still valid with the new quote count
+    const totalPages = Math.max(1, Math.ceil(this.allQuotes.length / this.quotesPerPage));
+    if (this.currentPage > totalPages) {
+      // If current page is now beyond total pages, reset to last valid page
+      this.currentPage = totalPages;
+    }
+    
+    // Implement client-side pagination
+    const startIndex = (this.currentPage - 1) * this.quotesPerPage;
+    const endIndex = startIndex + this.quotesPerPage;
+    const paginatedQuotes = this.allQuotes.slice(startIndex, endIndex);
+    
+    // Create HTML for current page quotes
+    const quotesHTML = paginatedQuotes.map(quote => this.createQuoteCard(quote)).join('');
     
     // Update the container
     container.innerHTML = quotesHTML;
@@ -340,29 +354,34 @@ class QuotesView {
           <span class="quote-mark">"</span>
           ${quote.quote}
           <span class="quote-mark">"</span>
-        </div>
-        <div class="quote-meta">
+        </div>        <div class="quote-meta">
           <p class="quote-character">— ${quote.character}</p>
-          <p class="quote-anime">${quote.anime}</p>
+          <p class="quote-anime">${quote.show}</p>
         </div>
       </div>
     `;
-  }
-  /**
+  }  /**
    * Render pagination controls
    * @param {HTMLElement} container - The pagination container
    * @param {Array} quotes - The current quotes
    */  renderPagination(container, quotes) {
     if (!container) return;
     
-    // Assume API provides 10 quotes per page
-    const quotesPerPage = 10;
     const maxPagesToShow = 5; // Show up to 5 page numbers
     
-    // Check if we have a full page of quotes, indicating there may be more
-    const hasMore = Array.isArray(quotes) && quotes.length >= quotesPerPage;
+    // Calculate total pages based on all quotes
+    const totalQuotes = this.allQuotes.length;
+    const totalPages = Math.max(1, Math.ceil(totalQuotes / this.quotesPerPage));
     
-    // Generate page numbers to display
+    // If we have only 1 page or fewer items than quotes per page, no pagination needed
+    if (totalQuotes <= this.quotesPerPage) {
+      container.innerHTML = '';
+      return;
+    }
+    
+    // Determine if there are more pages
+    const hasMore = this.currentPage < totalPages;
+      // Generate page numbers to display
     let pageNumbers = [];
     if (this.currentPage > 1) {
       // Always include at least first page, current page, and potentially next page
@@ -386,24 +405,62 @@ class QuotesView {
     if (hasMore) {
       pageNumbers.push(this.currentPage + 1);
       
-      // Indicate there might be more pages with ellipsis
-      pageNumbers.push('...');
+      // Add last page with ellipsis if far away
+      if (this.currentPage < totalPages - 1) {
+        if (this.currentPage < totalPages - 2) {
+          pageNumbers.push('...');
+        }
+        pageNumbers.push(totalPages);
+      }
     }
-    
-    // Remove duplicates and ensure we don't exceed maxPagesToShow
+      // Remove duplicates and ensure we don't exceed maxPagesToShow
     pageNumbers = [...new Set(pageNumbers)];
+    
+    // Make sure we don't have invalid page numbers
+    pageNumbers = pageNumbers.filter(p => p === '...' || (typeof p === 'number' && p > 0 && p <= totalPages));
+    
     if (pageNumbers.length > maxPagesToShow) {
-      // Keep first, last, and current pages, plus one on each side of current
-      const currentIndex = pageNumbers.indexOf(this.currentPage);
-      const newPageNumbers = [
-        pageNumbers[0],
-        '...',
-        this.currentPage - 1,
-        this.currentPage,
-        this.currentPage + 1,
-        '...'
-      ];
-      pageNumbers = newPageNumbers.filter(p => p > 0); // Remove negative pages
+      // For complex pagination, we want to keep:
+      // 1. First page
+      // 2. Last page
+      // 3. Current page and one page on either side
+      
+      let newPageNumbers = [];
+      
+      // Always include first page
+      newPageNumbers.push(1);
+      
+      // Add ellipsis if there's a gap between first page and current - 1
+      if (this.currentPage > 3) {
+        newPageNumbers.push('...');
+      }
+      
+      // Add page before current if it exists
+      if (this.currentPage > 1 && this.currentPage - 1 > 1) {
+        newPageNumbers.push(this.currentPage - 1);
+      }
+      
+      // Current page
+      if (this.currentPage > 1 && this.currentPage < totalPages) {
+        newPageNumbers.push(this.currentPage);
+      }
+      
+      // Add page after current if it exists
+      if (this.currentPage < totalPages - 1) {
+        newPageNumbers.push(this.currentPage + 1);
+      }
+      
+      // Add ellipsis if there's a gap between current + 1 and last page
+      if (this.currentPage < totalPages - 2) {
+        newPageNumbers.push('...');
+      }
+      
+      // Add last page if it's different from current page
+      if (totalPages > 1 && this.currentPage < totalPages) {
+        newPageNumbers.push(totalPages);
+      }
+      
+      pageNumbers = newPageNumbers;
     }
     
     // Generate pagination HTML
@@ -427,19 +484,18 @@ class QuotesView {
         `;
       }
     });
-    
-    // Next button
-    if (hasMore) {
+      // Next button
+    if (hasMore && this.currentPage < totalPages) {
       paginationHTML += `<button class="pagination-btn next-page" data-page="${this.currentPage + 1}">Next</button>`;
     } else {
       paginationHTML += `<button class="pagination-btn next-page disabled">Next</button>`;
     }
+      // Add quote count information
+    paginationHTML += `<span class="pagination-info">${totalQuotes} quotes total (Page ${this.currentPage} of ${totalPages})</span>`;
     
     paginationHTML += `</div>`;
     
-    container.innerHTML = paginationHTML;
-    
-    // Add event listeners to pagination buttons
+    container.innerHTML = paginationHTML;    // Add event listeners to pagination buttons
     document.querySelectorAll('.pagination-btn:not(.disabled)').forEach(button => {
       button.addEventListener('click', () => {
         if (button.classList.contains('disabled')) return;
@@ -447,9 +503,23 @@ class QuotesView {
         const page = parseInt(button.dataset.page);
         if (page && !isNaN(page)) {
           this.currentPage = page;
-          this.loadQuotes();
-          // Scroll to top of quotes container
-          document.querySelector('.quotes-view').scrollIntoView({ behavior: 'smooth' });
+          
+          // No need to reload quotes from API, just re-render with the new page
+          const quotesContainer = document.getElementById('quotes-container');
+          const paginationContainer = document.getElementById('quotes-pagination');
+          
+          if (quotesContainer) {
+            // First update the content
+            this.renderQuotes(this.allQuotes, quotesContainer);
+            
+            // Then update the pagination controls
+            if (paginationContainer) {
+              this.renderPagination(paginationContainer, this.allQuotes);
+            }
+            
+            // Scroll to top of quotes container
+            document.querySelector('.quotes-view').scrollIntoView({ behavior: 'smooth' });
+          }
         }
       });
     });
