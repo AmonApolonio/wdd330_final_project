@@ -629,6 +629,32 @@ h2 {
   background-color: #3951e0;
 }
 
+.primary-btn:disabled {
+  background-color: #a0a7d8;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.primary-btn.cooldown {
+  position: relative;
+}
+
+.primary-btn.cooldown::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  animation: cooldown-animation 10s linear forwards;
+}
+
+@keyframes cooldown-animation {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
 .secondary-btn {
   background-color: #f5f5f5;
   color: #333;

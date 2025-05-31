@@ -1,4 +1,5 @@
 import { getAnimeFull } from '../api/jikan.js';
+import { getRandomQuoteByAnime } from '../api/animequotes.js';
 
 class DetailView {  /**
    * Render the anime detail view
@@ -53,11 +54,126 @@ class DetailView {  /**
       
       // Check if we have data
       if (response && response.data) {
-        // Render the anime details
-        detailContainer.innerHTML = this.createAnimeDetailHTML(response.data);
+        // Try to fetch a quote for this anime
+        let quoteHTML = '';
+        try {
+          const quoteResp = await getRandomQuoteByAnime(response.data.title_english || response.data.title);
+          // The API may return an array or object
+          let quoteObj = null;
+          if (Array.isArray(quoteResp)) {
+            quoteObj = quoteResp[0];
+          } else if (quoteResp && quoteResp.quote) {
+            quoteObj = quoteResp;
+          } else if (quoteResp && quoteResp.data && Array.isArray(quoteResp.data) && quoteResp.data.length > 0) {
+            quoteObj = quoteResp.data[0];
+          }
+          if (quoteObj && quoteObj.quote) {
+            quoteHTML = `
+              <section class="anime-quote anime-card">
+                <div class="anime-card-content">
+                  <div class="quote-text">
+                    <span class="quote-mark">“</span>${quoteObj.quote}<span class="quote-mark">”</span>
+                  </div>
+                  <div class="quote-meta">
+                    <p class="quote-character">— ${quoteObj.character}</p>
+                    <p class="quote-anime">${quoteObj.show}</p>
+                  </div>
+                  <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
+                </div>
+              </section>
+            `;
+          }
+        } catch (e) {
+          // Ignore quote errors, just don't show quote
+        }
+        // Render the anime details, injecting the quote if found
+        detailContainer.innerHTML = this.createAnimeDetailHTML(response.data, quoteHTML);
         
         // Set up event listeners for interactive elements
         this.setupEventListeners(response.data);
+        // Set up event listener for new quote button if present
+        const newQuoteBtn = document.getElementById('new-quote-btn');
+        if (newQuoteBtn) {
+          // Define a named handler function so we can re-attach it
+          const handleNewQuote = async () => {
+            newQuoteBtn.disabled = true;
+            newQuoteBtn.textContent = 'Loading...';
+            try {
+              const quoteResp = await getRandomQuoteByAnime(response.data.title_english || response.data.title);
+              let quoteObj = null;
+              if (Array.isArray(quoteResp)) {
+                quoteObj = quoteResp[0];
+              } else if (quoteResp && quoteResp.quote) {
+                quoteObj = quoteResp;
+              } else if (quoteResp && quoteResp.data && Array.isArray(quoteResp.data) && quoteResp.data.length > 0) {
+                quoteObj = quoteResp.data[0];
+              }
+              if (quoteObj && quoteObj.quote) {
+                const quoteSection = document.querySelector('.anime-quote .anime-card-content');
+                if (quoteSection) {
+                  quoteSection.innerHTML = `
+                    <div class=\"quote-text\">
+                      <span class=\"quote-mark\">“</span>${quoteObj.quote}<span class=\"quote-mark\">”</span>
+                    </div>
+                    <div class=\"quote-meta\">
+                      <p class=\"quote-character\">— ${quoteObj.character}</p>
+                      <p class=\"quote-anime\">${quoteObj.show}</p>
+                    </div>
+                    <button id=\"new-quote-btn\" class=\"primary-btn cooldown\" type=\"button\" disabled>New Quote (10s)</button>
+                  `;
+                  // Re-attach event listener to the new button after the cooldown
+                  const newBtn = document.getElementById('new-quote-btn');
+                  if (newBtn) {
+                    // Start the cooldown timer
+                    let secondsLeft = 10;
+                    const countdownInterval = setInterval(() => {
+                      secondsLeft--;
+                      if (newBtn) {
+                        newBtn.textContent = `New Quote (${secondsLeft}s)`;
+                      }
+                      
+                      if (secondsLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        if (newBtn) {
+                          newBtn.disabled = false;
+                          newBtn.textContent = 'New Quote';
+                          newBtn.classList.remove('cooldown');
+                          newBtn.addEventListener('click', handleNewQuote);
+                        }
+                      }
+                    }, 1000);
+                  }
+                }
+              }
+            } catch (e) {
+              alert('Failed to fetch a new quote.');
+              // Only re-enable if the button still exists, but with cooldown
+              const btn = document.getElementById('new-quote-btn');
+              if (btn) {
+                btn.classList.add('cooldown');
+                // Start the cooldown timer even on error
+                let secondsLeft = 10;
+                const countdownInterval = setInterval(() => {
+                  secondsLeft--;
+                  if (btn) {
+                    btn.textContent = `New Quote (${secondsLeft}s)`;
+                  }
+                  
+                  if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    if (btn) {
+                      btn.disabled = false;
+                      btn.textContent = 'New Quote';
+                      btn.classList.remove('cooldown');
+                      btn.addEventListener('click', handleNewQuote);
+                    }
+                  }
+                }, 1000);
+              }
+            }
+          };
+          newQuoteBtn.addEventListener('click', handleNewQuote);
+        }
       } else {
         detailContainer.innerHTML = '<p>Anime not found. It may have been removed or the ID is incorrect.</p>';
       }
@@ -80,9 +196,10 @@ class DetailView {  /**
   /**
    * Create the HTML for the anime detail page
    * @param {Object} anime - Anime data from API
+   * @param {string} [quoteHTML] - Optional HTML for the quote section
    * @returns {string} - HTML for the detail page
    */
-  createAnimeDetailHTML(anime) {
+  createAnimeDetailHTML(anime, quoteHTML = '') {
     // Default image if none provided
     const imageUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/225x318?text=No+Image';
     
@@ -114,7 +231,7 @@ class DetailView {  /**
             <button id="save-anime-btn" data-id="${anime.mal_id}">Add to My List</button>
           </div>
         </div>
-        
+        ${quoteHTML}
         <div class="anime-synopsis">
           <h3>Synopsis</h3>
           <p>${anime.synopsis || 'No synopsis available.'}</p>
