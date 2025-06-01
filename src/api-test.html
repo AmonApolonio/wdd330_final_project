@@ -75,41 +75,6 @@
       border-color: #4e68f5;
     }
     
-    .dark-theme .api-tab {
-      background: #2d2d2d;
-      border-color: #444;
-    }
-    
-    .dark-theme .api-tab.active {
-      background: #4e68f5;
-      border-color: #4e68f5;
-    }
-    
-    /* Dark theme specific styles */
-    .dark-theme {
-      background-color: #121212;
-      color: #e4e4e4;
-    }
-    .dark-theme h1 {
-      color: #6e88ff;
-    }
-    .dark-theme .test-section {
-      border-color: #444;
-      background-color: #1e1e1e;
-    }
-    .dark-theme input {
-      background-color: #333;
-      color: #e4e4e4;
-      border: 1px solid #555;
-    }
-    .dark-theme pre {
-      background-color: #2d2d2d;
-      color: #e4e4e4;
-    }
-    .dark-theme .error {
-      color: #ff6b6b;
-    }
-    
     /* Back to main site button */
     .back-link {
       display: block;
@@ -118,9 +83,7 @@
       font-weight: bold;
       text-decoration: underline;
     }
-    .dark-theme .back-link {
-      color: #6e88ff;
-    }
+
     
     /* API tabs */
     .api-tabs {
@@ -242,12 +205,10 @@
     <script type="module">    import { searchAnime, getSeasonsNow, getAnimeFull, getRandomAnime } from './js/api/jikan.js';
     import { fetchQuotes, getAllQuotes, getRandomQuote, searchQuotesByCharacter, 
             searchQuotesByAnime, getRandomQuoteByCharacter, getRandomQuoteByAnime } from './js/api/animequotes.js';
-    import { applySavedTheme } from './js/theme.js';
     import { testAnimeQuotesAPI } from './js/test-animequotes.js';
     
-    // Apply saved theme when page loads
+    // Initialize when page loads
     document.addEventListener('DOMContentLoaded', () => {
-      applySavedTheme();
       
       // Set up tabs
       setupTabs();

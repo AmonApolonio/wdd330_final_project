@@ -397,10 +397,6 @@ h2 {
   white-space: nowrap;
 }
 
-/* Dark theme support for pagination info */
-.dark-theme .pagination-info {
-  color: #aaa;
-}
 
 /* Error Message Styles */
 .error-message {
@@ -416,10 +412,6 @@ h2 {
   text-align: center;
 }
 
-.dark-theme .error-message {
-  background-color: #3a2a2a;
-  border-left-color: #f44336;
-}
 
 .error-message p {
   margin-bottom: 1rem;
@@ -493,65 +485,7 @@ h2 {
   background-color: #e33;
 }
 
-/* Dark Theme */
-.dark-theme {
-  color: #e4e4e4;
-  background-color: #121212;
-}
 
-.dark-theme #main-header {
-  background-color: #1e1e1e;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.dark-theme a {
-  color: #e4e4e4;
-}
-
-.dark-theme .anime-card,
-.dark-theme .anime-detail-content {
-  background-color: #1e1e1e;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.dark-theme .anime-card-content h3 {
-  color: #e4e4e4;
-}
-
-.dark-theme .anime-card-content p {
-  color: #aaa;
-}
-
-.dark-theme .anime-detail-info h2 {
-  color: #e4e4e4;
-}
-
-.dark-theme .error-message {
-  background-color: #400;
-  border-left: 4px solid #f44;
-}
-
-.dark-theme #search-input {
-  background-color: #333;
-  color: #e4e4e4;
-  border: 1px solid #555;
-}
-
-.dark-theme #search-button {
-  background-color: #4e68f5;
-}
-
-.dark-theme .view-details-btn,
-.dark-theme #save-anime-btn,
-.dark-theme .pagination-btn {
-  background-color: #4e68f5;
-}
-
-.dark-theme .view-details-btn:hover,
-.dark-theme #save-anime-btn:hover,
-.dark-theme .pagination-btn:hover {
-  background-color: #3951e0;
-}
 
 /* Quotes View Styles */
 .quotes-view {
@@ -567,10 +501,7 @@ h2 {
   margin-bottom: 2rem;
 }
 
-.dark-theme .quotes-filters {
-  background-color: #1e1e1e;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
+
 
 .filter-inputs {
   display: flex;
@@ -596,11 +527,7 @@ h2 {
   border-radius: 4px;
 }
 
-.dark-theme .filter-group input[type="text"] {
-  background-color: #333;
-  color: #e4e4e4;
-  border-color: #555;
-}
+
 
 .filter-group.checkbox {
   display: flex;
@@ -668,15 +595,6 @@ h2 {
   background-color: #e5e5e5;
 }
 
-.dark-theme .secondary-btn {
-  background-color: #333;
-  color: #e4e4e4;
-  border-color: #555;
-}
-
-.dark-theme .secondary-btn:hover {
-  background-color: #444;
-}
 
 .quotes-container {
   display: grid;
@@ -695,9 +613,6 @@ h2 {
   font-weight: 500;
 }
 
-.dark-theme .filter-summary {
-  background-color: #2a2a42;
-}
 
 /* Loading spinner styles */
 .loading-container {
@@ -725,10 +640,6 @@ h2 {
   }
 }
 
-.dark-theme .loading-spinner {
-  border-color: rgba(110, 136, 255, 0.2);
-  border-top-color: #6e88ff;
-}
 
 .quote-card {
   background-color: #fff;
@@ -745,10 +656,6 @@ h2 {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.dark-theme .quote-card {
-  background-color: #1e1e1e;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
 
 .quote-text {
   font-size: 1.1rem;
@@ -767,9 +674,6 @@ h2 {
   color: #4e68f5;
 }
 
-.dark-theme .quote-mark {
-  color: #6e88ff;
-}
 
 .quote-meta {
   margin-top: auto;
@@ -777,9 +681,6 @@ h2 {
   padding-top: 1rem;
 }
 
-.dark-theme .quote-meta {
-  border-top-color: #333;
-}
 
 .quote-character {
   font-weight: bold;
@@ -791,9 +692,6 @@ h2 {
   color: #666;
 }
 
-.dark-theme .quote-anime {
-  color: #aaa;
-}
 
 .retry-btn {
   background-color: #f44;
@@ -860,16 +758,7 @@ h2 {
   top: 0;
 }
 
-/* Dark theme support for hamburger */
-.dark-theme .hamburger-icon, 
-.dark-theme .hamburger-icon::before, 
-.dark-theme .hamburger-icon::after {
-  background-color: #4e68f5;
-}
 
-.dark-theme .menu-active .hamburger-icon {
-  background-color: transparent;
-}
 
 /* Responsive styles */
 @media screen and (max-width: 768px) {

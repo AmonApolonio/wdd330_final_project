@@ -16,18 +16,9 @@
   text-align: center;
 }
 
-.dark-theme .success-message {
-  background-color: #1a3320;
-  border-left-color: #28a745;
-}
-
 .success-message h3 {
   color: #28a745;
   margin-bottom: 1rem;
-}
-
-.dark-theme .success-message h3 {
-  color: #4cd964;
 }
 
 .primary-btn {

@@ -20,10 +20,6 @@ const routes = {
   '#/quotes': {
     viewModule: 'QuotesView',
     fallback: renderQuotes
-  },
-  '#/settings': { 
-    viewModule: 'SettingsView',
-    fallback: renderSettings 
   }
 };
 
@@ -199,27 +195,6 @@ function renderQuotes() {
         </div>
         
         <div class="quotes-pagination" id="quotes-pagination"></div>
-      </section>
-    `;
-  }
-}
-
-function renderSettings() {
-  const appElement = document.getElementById("app");
-  if (appElement) {
-    appElement.innerHTML = `
-      <section class="settings-view">
-        <h1>Settings</h1>
-        <form id="settings-form">
-          <div class="form-group">
-            <label for="theme-select">Theme</label>
-            <select id="theme-select">
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-            </select>
-          </div>
-          <button type="submit">Save Settings</button>
-        </form>
       </section>
     `;
   }

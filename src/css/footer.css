@@ -48,22 +48,6 @@
   text-decoration: underline;
 }
 
-
-
-/* Dark theme support */
-.dark-theme #main-footer {
-  background-color: #1a1a1a;
-  color: #f0f0f0;
-}
-
-.dark-theme .api-info a {
-  color: #ff7b4d;
-}
-
-.dark-theme .api-info a:hover {
-  color: #ff9e7d;
-}
-
 /* Responsive styles */
 @media screen and (max-width: 768px) {
   .footer-info {
