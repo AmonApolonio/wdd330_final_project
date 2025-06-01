@@ -12,6 +12,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 a {
@@ -116,6 +118,7 @@ a {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  min-height: 70vh; /* Ensure minimum height for content area */
 }
 
 /* View Styles */
