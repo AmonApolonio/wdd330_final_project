@@ -133,16 +133,15 @@ export const searchQuotesByCharacter = withCache(
 /**
  * Search quotes by anime
  * @param {string|string[]} show - Anime show name(s)
- * @param {number} page - Page number for pagination
  * @returns {Promise<Object>} - Quotes from the anime(s)
  */
-function _searchQuotesByAnime(show, page = 1) {
-  return fetchQuotes({ show, page });
+function _searchQuotesByAnime(show) {
+  return fetchQuotes({ show });
 }
 
 export const searchQuotesByAnime = withCache(
   _searchQuotesByAnime,
-  (show, page) => `quotes_anime_${show}_page_${page}`,
+  (show) => `quotes_anime_${show}`,
   CACHE_DURATION.DEFAULT
 );
 
