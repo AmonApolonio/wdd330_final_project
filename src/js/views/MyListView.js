@@ -73,8 +73,10 @@ class MyListView {
         // Set up event listeners for remove buttons
         setupRemoveButtons(() => this.loadMyList());
         
-        // Set up interactivity for anime cards
-        setupAnimeCardInteractivity();
+        // Set up interactivity for anime cards with an update callback
+        setupAnimeCardInteractivity({
+          updateCallback: () => this.loadMyList()
+        });
       } else {
         // If no items in list, show a message
         myListContainer.innerHTML = `
