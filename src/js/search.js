@@ -65,7 +65,7 @@ export function showSearchLoadingSpinner() {
     searchButton.disabled = true;
     
     // Add loading class to button
-    searchButton.innerHTML = '<div class="loading-spinner" style="width: 20px; height: 20px; border-width: 3px; margin: 0;"></div>';
+    searchButton.innerHTML = '<div class="loading-spinner search-spinner"></div>';
   }
 }
 

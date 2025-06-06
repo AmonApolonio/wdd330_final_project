@@ -544,6 +544,14 @@ h2 {
   margin-bottom: 1rem;
 }
 
+/* Small loading spinner for search button */
+.search-spinner {
+  width: 20px;
+  height: 20px;
+  border-width: 3px;
+  margin: 0;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
