@@ -12,10 +12,10 @@
  */
 
 // Import AnimeCard and its utility functions
-import AnimeCard, { 
-  setupAnimeCardInteractivity, 
-  isAnimeInMyList 
-} from './AnimeCard.js';
+import AnimeCard from './AnimeCard.js';
+
+// Import carousel styles
+import '../../../css/carousel.css';
 
 /**
  * Creates and initializes a carousel
@@ -305,112 +305,15 @@ export default function Carousel(containerEl, itemsArray) {
     stopAutoRotation();
     startAutoRotation();
   }
-  
-  /**
-   * Add carousel styles to document
+    /**
+   * Set up carousel track width
    */
   function addCarouselStyles() {
-    if (document.getElementById('carousel-styles')) return;
-    
-    const styleSheet = document.createElement('style');
-    styleSheet.id = 'carousel-styles';
-    styleSheet.textContent = `
-      .carousel {
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        margin: 20px 0;
-        background-color: #f8f8f8;
-      }
-      
-      .carousel-track {
-        display: flex;
-        transition: transform 0.5s ease;
-      }
-      
-      .carousel-item {
-        flex: 0 0 ${ITEM_WIDTH};
-        padding: 12px;
-        box-sizing: border-box;
-        width: ${ITEM_WIDTH};
-      }
-      
-      /* Ensure AnimeCard fills the carousel item */
-      .carousel-item .anime-card {
-        width: 100%;
-        margin: 0;
-        box-shadow: none;
-      }
-      
-      /* Style overrides for AnimeCard inside carousel */
-      .carousel-item .anime-card:hover {
-        transform: translateY(-5px);
-        transition: transform 0.3s ease;
-      }
-      
-      .carousel-control {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 40px;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.8);
-        border: none;
-        border-radius: 50%;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 2;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        transition: background-color 0.2s, transform 0.1s;
-      }
-      
-      .carousel-control:hover {
-        background: white;
-        transform: translateY(-50%) scale(1.1);
-      }
-      
-      .carousel-control:active {
-        transform: translateY(-50%) scale(0.95);
-      }
-      
-      .carousel-control.prev {
-        left: 10px;
-      }
-      
-      .carousel-control.next {
-        right: 10px;
-      }
-      
-      /* Responsive adjustments */
-      @media (max-width: 992px) {
-        .carousel-control {
-          width: 32px;
-          height: 32px;
-          font-size: 18px;
-        }
-      }
-      
-      @media (max-width: 576px) {
-        .carousel-item .anime-card:hover {
-          transform: none;
-        }
-        
-        .carousel-control {
-          width: 30px;
-          height: 30px;
-          font-size: 16px;
-        }
-      }
-    `;
-    document.head.appendChild(styleSheet);
-    
     // Calculate carousel track width based on items
     const trackWidth = itemsArray.length * parseInt(ITEM_WIDTH) + 'px';
     track.style.width = trackWidth;
+    
+    // Set carousel item width using CSS variable
+    document.documentElement.style.setProperty('--carousel-item-width', ITEM_WIDTH);
   }
 }
