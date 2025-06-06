@@ -1,5 +1,6 @@
 import { getSeasonsNow, getRandomAnime, getTrendingAnime, getTopAiringAnime } from '../api/jikan.js';
 import Carousel from '../ui/components/Carousel.js';
+import AnimeCard, { setupAnimeCardInteractivity } from '../ui/components/AnimeCard.js';
 
 class HomeView {
   constructor() {
@@ -206,12 +207,14 @@ class HomeView {
         if (uniquePopularAnime.length > 0) {
           // Track these anime as displayed
           uniquePopularAnime.forEach(anime => this.displayedAnimeIds.add(anime.mal_id));
-          
-          // Add the anime-grid class and populate with cards
+            // Add the anime-grid class and populate with cards
           featuredContainer.classList.add('anime-grid');
           featuredContainer.innerHTML = uniquePopularAnime
-            .map(anime => this.createAnimeCard(anime))
+            .map(anime => AnimeCard(anime))
             .join('');
+          
+          // Set up the interactive elements
+          setupAnimeCardInteractivity();
         } else {
           // If all trending anime were duplicates, try to get random anime instead
           this.loadRandomAnime(featuredContainer);
@@ -266,32 +269,6 @@ class HomeView {
         });
       }
     }
-  }
-
-  /**
-   * Create HTML for an anime card
-   * @param {Object} anime - Anime data from API
-   * @returns {string} - HTML string
-   */
-  createAnimeCard(anime) {
-    // Default image if none provided
-    const imageUrl = anime.images?.jpg?.image_url || 'https://via.placeholder.com/225x318?text=No+Image';
-    
-    // Use a sensible title (English or default)
-    const title = anime.title_english || anime.title;
-    
-    return `
-      <div class="anime-card" data-id="${anime.mal_id}">
-        <div class="anime-card-image">
-          <img src="${imageUrl}" alt="${title}" loading="lazy">
-        </div>
-        <div class="anime-card-content">
-          <h3>${title}</h3>
-          <p>${anime.score ? `Rating: ${anime.score}/10` : 'Not rated'}</p>
-          <a href="#/detail/${anime.mal_id}" class="view-details-btn">View Details</a>
-        </div>
-      </div>
-    `;
   }
 }
 

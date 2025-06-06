@@ -1,5 +1,6 @@
 import { searchAnime } from '../api/jikan.js';
 import { getSearchQuery, hideSearchLoadingSpinner } from '../search.js';
+import AnimeCard, { setupAnimeCardInteractivity } from '../ui/components/AnimeCard.js';
 
 class SearchView {
   constructor() {
@@ -111,7 +112,7 @@ class SearchView {
         
         // Add each anime as a card
         resultsHTML += response.data
-          .map(anime => this.createAnimeCard(anime))
+          .map(anime => AnimeCard(anime))
           .join('');
         
         resultsHTML += '</div>';
@@ -120,11 +121,13 @@ class SearchView {
         if (response.pagination.last_visible_page > 1) {
           resultsHTML += this.createPagination(query, page, response.pagination);
         }
-        
-        searchResultsContainer.innerHTML = resultsHTML;
+          searchResultsContainer.innerHTML = resultsHTML;
         
         // Add event listeners to pagination buttons
         this.setupPaginationEvents(query);
+        
+        // Set up interactivity for anime cards
+        setupAnimeCardInteractivity();
       } else {
         // If no results, show a message
         searchResultsContainer.innerHTML = `
@@ -154,32 +157,6 @@ class SearchView {
         this.performSearch(query, page);
       });
     }
-  }
-  
-  /**
-   * Create HTML for an anime card
-   * @param {Object} anime - Anime data from API
-   * @returns {string} - HTML string
-   */
-  createAnimeCard(anime) {
-    // Default image if none provided
-    const imageUrl = anime.images?.jpg?.image_url || 'https://via.placeholder.com/225x318?text=No+Image';
-    
-    // Use a sensible title (English or default)
-    const title = anime.title_english || anime.title;
-    
-    return `
-      <div class="anime-card" data-id="${anime.mal_id}">
-        <div class="anime-card-image">
-          <img src="${imageUrl}" alt="${title}" loading="lazy">
-        </div>
-        <div class="anime-card-content">
-          <h3>${title}</h3>
-          <p>${anime.score ? `Rating: ${anime.score}/10` : 'Not rated'}</p>
-          <a href="#/detail/${anime.mal_id}" class="view-details-btn">View Details</a>
-        </div>
-      </div>
-    `;
   }
   
   /**
