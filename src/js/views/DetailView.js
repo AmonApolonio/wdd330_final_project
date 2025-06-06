@@ -60,126 +60,14 @@ class DetailView {
       
       // Check if we have data
       if (response && response.data) {
-        // Try to fetch all quotes for this anime
-        let quoteHTML = '';
-        try {
-          // Clear previous anime quotes
-          this.animeQuotes = [];
-          
-          // Get anime title to search for
-          const animeTitle = response.data.title_english || response.data.title;
-          
-          // Fetch all quotes for this anime
-          const quotes = await searchQuotesByAnime(animeTitle);
-            // Store quotes for future use
-          if (Array.isArray(quotes)) {
-            this.animeQuotes = quotes;
-          } else if (quotes && quotes.data && Array.isArray(quotes.data)) {
-            this.animeQuotes = quotes.data;
-          }
-          
-          // Get a random quote if available
-          let quoteObj = null;
-          if (this.animeQuotes.length > 0) {
-            const randomIndex = Math.floor(Math.random() * this.animeQuotes.length);
-            quoteObj = this.animeQuotes[randomIndex];
-          } else {
-            // If no quotes found, it's likely there aren't any quotes for this anime
-            console.log(`No quotes found for anime: ${animeTitle}`);
-          }
-          
-          if (quoteObj && quoteObj.quote) {
-            quoteHTML = `
-              <section class="anime-quote anime-card">
-                <div class="anime-card-content">
-                  <div class="quote-text">
-                    <span class="quote-mark">"</span>${quoteObj.quote}<span class="quote-mark">"</span>
-                  </div>
-                  <div class="quote-meta">
-                    <p class="quote-character">— ${quoteObj.character}</p>
-                    <p class="quote-anime">${quoteObj.show}</p>
-                  </div>
-                  <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
-                </div>
-              </section>
-            `;
-          }
-        } catch (e) {
-          // Ignore quote errors, just don't show quote
-          console.error('Error fetching quotes:', e);
-        }
-        
-        // Render the anime details, injecting the quote if found
-        detailContainer.innerHTML = this.createAnimeDetailHTML(response.data, quoteHTML);
+        // Render the anime details immediately, without waiting for quotes
+        detailContainer.innerHTML = this.createAnimeDetailHTML(response.data);
         
         // Set up event listeners for interactive elements
         this.setupEventListeners(response.data);
         
-        // Set up event listener for new quote button if present
-        const newQuoteBtn = document.getElementById('new-quote-btn');
-        if (newQuoteBtn) {
-          // Define a named handler function so we can re-attach it
-          const handleNewQuote = () => {
-            // Disable button immediately
-            newQuoteBtn.disabled = true;
-            newQuoteBtn.textContent = 'Loading...';
-            
-            try {
-              // Check if we have quotes available
-              if (this.animeQuotes.length > 0) {
-                // Get a random quote from our already fetched quotes
-                const randomIndex = Math.floor(Math.random() * this.animeQuotes.length);
-                const quoteObj = this.animeQuotes[randomIndex];
-                
-                // Update the quote display
-                const quoteSection = document.querySelector('.anime-quote .anime-card-content');
-                if (quoteSection && quoteObj) {
-                  quoteSection.innerHTML = `
-                    <div class="quote-text">
-                      <span class="quote-mark">"</span>${quoteObj.quote}<span class="quote-mark">"</span>
-                    </div>
-                    <div class="quote-meta">
-                      <p class="quote-character">— ${quoteObj.character}</p>
-                      <p class="quote-anime">${quoteObj.show}</p>
-                    </div>
-                    <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
-                  `;
-                  
-                  // Re-attach event listener to the new button
-                  const newBtn = document.getElementById('new-quote-btn');
-                  if (newBtn) {
-                    newBtn.addEventListener('click', handleNewQuote);
-                  }
-                }
-              } else {
-                // No quotes available, show error
-                alert('No quotes available for this anime.');
-                
-                // Re-enable button
-                const btn = document.getElementById('new-quote-btn');
-                if (btn) {
-                  btn.disabled = false;
-                  btn.textContent = 'New Quote';
-                  btn.addEventListener('click', handleNewQuote);
-                }
-              }
-            } catch (e) {
-              console.error('Error displaying new quote:', e);
-              alert('Failed to display a new quote.');
-              
-              // Re-enable button
-              const btn = document.getElementById('new-quote-btn');
-              if (btn) {
-                btn.disabled = false;
-                btn.textContent = 'New Quote';
-                btn.addEventListener('click', handleNewQuote);
-              }
-            }
-          };
-          
-          // Add click handler to the button
-          newQuoteBtn.addEventListener('click', handleNewQuote);
-        }
+        // Load quotes asynchronously after main content is loaded
+        this.loadAnimeQuotes(response.data.title_english || response.data.title);
       } else {
         detailContainer.innerHTML = '<p>Anime not found. It may have been removed or the ID is incorrect.</p>';
       }
@@ -200,12 +88,133 @@ class DetailView {
   }
   
   /**
+   * Load and display quotes for an anime asynchronously
+   * @param {string} animeTitle - The title of the anime to search quotes for
+   */
+  async loadAnimeQuotes(animeTitle) {
+    const quoteContainer = document.getElementById('anime-quote-container');
+    if (!quoteContainer) return;
+    
+    try {
+      // Clear previous anime quotes
+      this.animeQuotes = [];
+      
+      // Fetch all quotes for this anime
+      const quotes = await searchQuotesByAnime(animeTitle);
+      
+      // Store quotes for future use
+      if (Array.isArray(quotes)) {
+        this.animeQuotes = quotes;
+      } else if (quotes && quotes.data && Array.isArray(quotes.data)) {
+        this.animeQuotes = quotes.data;
+      }
+      
+      // Display quotes if available
+      if (this.animeQuotes.length > 0) {
+        // Get a random quote
+        const randomIndex = Math.floor(Math.random() * this.animeQuotes.length);
+        const quoteObj = this.animeQuotes[randomIndex];
+        
+        quoteContainer.innerHTML = `
+          <section class="anime-quote anime-card">
+            <div class="anime-card-content">
+              <div class="quote-text">
+                <span class="quote-mark">"</span>${quoteObj.quote}<span class="quote-mark">"</span>
+              </div>
+              <div class="quote-meta">
+                <p class="quote-character">— ${quoteObj.character}</p>
+                <p class="quote-anime">${quoteObj.show}</p>
+              </div>
+              <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
+            </div>
+          </section>
+        `;
+        
+        // Set up event listener for new quote button
+        const newQuoteBtn = document.getElementById('new-quote-btn');
+        if (newQuoteBtn) {
+          newQuoteBtn.addEventListener('click', this.handleNewQuote.bind(this));
+        }
+      } else {
+        // No quotes found - simply hide the container
+        quoteContainer.innerHTML = '';
+      }
+    } catch (error) {
+      // Log error but don't show error message to user
+      console.error('Error loading quotes:', error);
+      // Hide the quotes container instead of showing error
+      quoteContainer.innerHTML = '';
+    }
+  }
+  
+  /**
+   * Handle clicking the "New Quote" button
+   */
+  handleNewQuote() {
+    // Disable button immediately
+    const newQuoteBtn = document.getElementById('new-quote-btn');
+    if (newQuoteBtn) {
+      newQuoteBtn.disabled = true;
+      newQuoteBtn.textContent = 'Loading...';
+    }
+    
+    try {
+      // Check if we have quotes available
+      if (this.animeQuotes.length > 0) {
+        // Get a random quote from our already fetched quotes
+        const randomIndex = Math.floor(Math.random() * this.animeQuotes.length);
+        const quoteObj = this.animeQuotes[randomIndex];
+        
+        // Update the quote display
+        const quoteSection = document.querySelector('.anime-quote .anime-card-content');
+        if (quoteSection && quoteObj) {
+          quoteSection.innerHTML = `
+            <div class="quote-text">
+              <span class="quote-mark">"</span>${quoteObj.quote}<span class="quote-mark">"</span>
+            </div>
+            <div class="quote-meta">
+              <p class="quote-character">— ${quoteObj.character}</p>
+              <p class="quote-anime">${quoteObj.show}</p>
+            </div>
+            <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
+          `;
+          
+          // Re-attach event listener to the new button
+          const newBtn = document.getElementById('new-quote-btn');
+          if (newBtn) {
+            newBtn.addEventListener('click', this.handleNewQuote.bind(this));
+          }
+        }
+      } else {
+        // No quotes available, show error
+        alert('No quotes available for this anime.');
+        
+        // Re-enable button
+        const btn = document.getElementById('new-quote-btn');
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'New Quote';
+        }
+      }
+    } catch (e) {
+      console.error('Error displaying new quote:', e);
+      alert('Failed to display a new quote.');
+      
+      // Re-enable button
+      const btn = document.getElementById('new-quote-btn');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'New Quote';
+      }
+    }
+  }
+  
+  /**
    * Create the HTML for the anime detail page
    * @param {Object} anime - Anime data from API
-   * @param {string} [quoteHTML] - Optional HTML for the quote section
    * @returns {string} - HTML for the detail page
    */
-  createAnimeDetailHTML(anime, quoteHTML = '') {
+  createAnimeDetailHTML(anime) {
     // Default image if none provided
     const imageUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/225x318?text=No+Image';
     
@@ -237,7 +246,12 @@ class DetailView {
             <button id="save-anime-btn" data-id="${anime.mal_id}">Add to My List</button>
           </div>
         </div>
-        ${quoteHTML}
+        
+        <!-- Quote section placeholder - will be loaded asynchronously -->
+        <div id="anime-quote-container">
+          <p>Loading quotes...</p>
+        </div>
+        
         <div class="anime-synopsis">
           <h3>Synopsis</h3>
           <p>${anime.synopsis || 'No synopsis available.'}</p>
