@@ -4,26 +4,27 @@
 .anime-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin: 1rem 0;
+  gap: 1.25rem;
+  margin: 1.25rem 0;
 }
 
 .anime-card {
-  background-color: #121419;
-  border-radius: 10px;
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius);
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease;
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
   cursor: pointer;
   position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid #1F2635;
+  border: 1px solid var(--color-border);
 }
 
 .anime-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .anime-card-image {
@@ -44,35 +45,38 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background-color: #1F2635;
-  color: #DBE6FF;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   font-size: 0.7rem;
   padding: 4px 10px;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   z-index: 2;
-  border: 1px solid rgba(219, 230, 255, 0.2);
+  border: 1px solid var(--color-border);
   max-width: 90%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .anime-card-content {
-  padding: 0.6rem;
+  padding: 0.8rem;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  color: #DBE6FF;
+  color: var(--color-text-primary);
 }
 
 .anime-card-content h3 {
   font-size: 1rem;
-  margin: 0.2rem 0;
-  color: #DBE6FF;
+  margin: 0.3rem 0;
+  color: var(--color-text-primary);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 600;
 }
 
 .anime-card-stats {
@@ -93,41 +97,40 @@
 
 .stat-label {
   margin: 0;
-  color: #DBE6FF;
-  opacity: 0.7;
+  color: var(--color-text-secondary);
   font-size: 0.7rem;
 }
 
 .stat-value {
   margin: 0;
-  color: #DBE6FF;
+  color: var(--color-text-primary);
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .add-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #1F2635;
-  color: #DBE6FF;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  background-color: var(--color-accent);
+  color: var(--color-text-primary);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--border-radius);
   font-size: 1.3rem;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(219, 230, 255, 0.2);
+  transition: var(--transition);
+  border: none;
   cursor: pointer;
 }
 
 .add-button:hover {
-  background-color: #2a334a;
+  background-color: var(--color-hover);
   transform: scale(1.05);
 }
 
 .add-button.in-list {
-  background-color: #1F2635;
-  border: 1px solid rgba(244, 68, 68, 0.5);
+  background-color: rgba(244, 68, 68, 0.8);
+  border: 1px solid rgba(244, 68, 68, 0.3);
 }
 
 .anime-card-actions {
@@ -168,27 +171,22 @@
   }
 }
 
-/* Status badge colors - keeping subdued in this design */
+/* Status badge colors - using consistent palette colors */
 .anime-card[data-status="Finished Airing"] .anime-status,
-.anime-card[data-status="Completed"] .anime-status {
-  background-color: #1F2635;
-}
-
+.anime-card[data-status="Completed"] .anime-status,
 .anime-card[data-status="Currently Airing"] .anime-status,
-.anime-card[data-status="Airing"] .anime-status {
-  background-color: #1F2635;
-}
-
+.anime-card[data-status="Airing"] .anime-status,
 .anime-card[data-status="Not yet aired"] .anime-status,
 .anime-card[data-status="Upcoming"] .anime-status {
-  background-color: #1F2635;
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-border);
 }
 
 /* Animation effects */
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1); box-shadow: var(--box-shadow); }
+  50% { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
+  100% { transform: scale(1); box-shadow: var(--box-shadow); }
 }
 
 @keyframes slide-in {
@@ -201,19 +199,27 @@
   100% { opacity: 0; }
 }
 
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(23, 71, 176, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(23, 71, 176, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(23, 71, 176, 0.5); }
+}
+
 /* Detail view button animations */
 #save-anime-btn {
-  transition: all 0.3s ease;
+  transition: var(--transition);
   padding: 0.8rem 3rem;
-  border: 1px solid rgba(219, 230, 255, 0.2);
-  border-radius: 8px;
+  border: none;
+  border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 1.2rem;
-  background-color: #1F2635;
-  color: #DBE6FF;
+  background-color: var(--color-accent);
+  color: var(--color-text-primary);
   margin-top: 1rem;
   position: relative;
   overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
 }
 
 #save-anime-btn:before {
@@ -223,7 +229,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(219, 230, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
 }
@@ -232,9 +238,14 @@
   transform: translateX(0);
 }
 
+#save-anime-btn:hover {
+  background-color: var(--color-hover);
+  transform: translateY(-2px);
+}
+
 #save-anime-btn.in-list {
-  background-color: #1F2635;
-  border: 1px solid rgba(244, 68, 68, 0.5);
+  background-color: rgba(244, 68, 68, 0.8);
+  border: none;
 }
 
 #save-anime-btn.adding {
@@ -251,15 +262,16 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background-color: #1F2635;
-  color: #DBE6FF;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
   padding: 12px 24px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
   opacity: 0;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out;
   z-index: 1000;
-  border: 1px solid rgba(219, 230, 255, 0.2);
+  border: 1px solid var(--color-border);
+  font-family: 'Inter', sans-serif;
 }
 
 .notification.show {

@@ -1,10 +1,11 @@
 /* Footer Styles */
 #main-footer {
-  background-color: #333;
-  color: #fff;
-  padding: 0.9rem 0 0 0;
-  margin-top: 2rem;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  padding: 1.2rem 0 0 0;
+  margin-top: 3rem;
   width: 100%;
+  border-top: 1px solid var(--color-border);
 }
 
 .footer-content {
@@ -20,11 +21,11 @@
 
 .footer-info {
   text-align: center;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.8rem;
   flex: 1 0 100%;
   font-size: 0.9rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .api-info {
@@ -39,12 +40,12 @@
 }
 
 .api-info a {
-  color: #ff4500;
-  transition: color 0.3s ease;
+  color: var(--color-accent);
+  transition: var(--transition);
 }
 
 .api-info a:hover {
-  color: #ff7b4d;
+  color: var(--color-hover);
   text-decoration: underline;
 }
 
