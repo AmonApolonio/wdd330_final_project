@@ -11,6 +11,12 @@
  * @module Carousel
  */
 
+// Import AnimeCard and its utility functions
+import AnimeCard, { 
+  setupAnimeCardInteractivity, 
+  isAnimeInMyList 
+} from './AnimeCard.js';
+
 /**
  * Creates and initializes a carousel
  * @param {HTMLElement} containerEl - The container element where the carousel will be placed
@@ -22,11 +28,10 @@ export default function Carousel(containerEl, itemsArray) {
   if (!containerEl || !Array.isArray(itemsArray) || itemsArray.length === 0) {
     console.error('Carousel requires a valid container and non-empty items array');
     return null;
-  }  // Constants and state
+  }  
+  
+  // Constants and state
   const ROTATION_INTERVAL = 5000; // 5 seconds
-  const IMAGE_HEIGHT = '350px'; // Fixed height for all images
-  const IMAGE_WIDTH = '225px'; // Fixed width for all images
-  const ITEM_HEIGHT = '450px'; // Fixed height for carousel items
   const ITEM_WIDTH = '250px'; // Fixed width for carousel items
   let currentIndex = 0;
   let autoRotationTimer = null;
@@ -44,7 +49,8 @@ export default function Carousel(containerEl, itemsArray) {
   // Create navigation controls
   const prevButton = createControlButton('prev', '❮', 'Previous');
   const nextButton = createControlButton('next', '❯', 'Next');
-    // Add items to carousel track
+  
+  // Add items to carousel track
   // Add original items first
   itemsArray.forEach((item, index) => {
     track.appendChild(createCarouselItem(item));
@@ -54,12 +60,14 @@ export default function Carousel(containerEl, itemsArray) {
   for (let i = 0; i < Math.min(itemsArray.length, 5); i++) {
     track.appendChild(createCarouselItem(itemsArray[i], true));
   }
-    // Assemble carousel structure
+  
+  // Assemble carousel structure
   carousel.appendChild(track);
   carousel.appendChild(prevButton);
   carousel.appendChild(nextButton);
   containerEl.appendChild(carousel);
-    // Add carousel styles
+  
+  // Add carousel styles
   addCarouselStyles();
   
   // Set up event handlers
@@ -78,85 +86,31 @@ export default function Carousel(containerEl, itemsArray) {
     start: startAutoRotation,
     getElement: () => carousel
   };
-    /**
-   * Creates a carousel item from data
+  
+  /**
+   * Creates a carousel item from data using AnimeCard
    * @param {Object} item - The item data to display
    * @param {boolean} isClone - Whether this item is a clone for infinite scrolling
    * @returns {HTMLElement} - The carousel item element
    */
   function createCarouselItem(item, isClone = false) {
     const itemElement = document.createElement('div');
-    itemElement.className = 'carousel-item';    // Create image container with fixed height and width
-    const imageContainer = document.createElement('div');
-    imageContainer.className = 'carousel-image-container';
-    imageContainer.style.height = IMAGE_HEIGHT;
-    imageContainer.style.width = IMAGE_WIDTH;
+    itemElement.className = 'carousel-item';
     
-    // Add loading spinner
-    const spinner = document.createElement('div');
-    spinner.className = 'carousel-spinner';
-    imageContainer.appendChild(spinner);    // Create and configure image
-    const image = document.createElement('img');
-    image.loading = 'lazy';
-    image.alt = item.title || 'Carousel image';
-    image.style.height = IMAGE_HEIGHT;
-    image.style.width = IMAGE_WIDTH;
+    // Use AnimeCard to generate the HTML
+    const animeCardHTML = AnimeCard(item);
     
-    // Find the best available image URL
-    const imageUrl = item.images?.jpg?.large_image_url || 
-                     item.images?.jpg?.image_url || 
-                     item.images?.webp?.large_image_url || 
-                     item.images?.webp?.image_url || 
-                     item.image || 
-                     item.img_url || 
-                     `https://via.placeholder.com/225x350?text=${encodeURIComponent(item.title || 'No Image')}`;
+    // Set the HTML content
+    itemElement.innerHTML = animeCardHTML;
     
-    // Set image events
-    image.onerror = () => {
-      image.src = `https://via.placeholder.com/225x350?text=${encodeURIComponent(item.title || 'No Image')}`;
-      spinner.style.display = 'none';
-    };
+    // Set fixed width but let height be determined by content
+    itemElement.style.width = ITEM_WIDTH;
     
-    image.onload = () => {
-      image.classList.add('loaded');
-      spinner.style.display = 'none';
-    };
-    
-    // Assign source last to trigger loading
-    image.src = imageUrl;
-    imageContainer.appendChild(image);
-    
-    // Create title and rating
-    const titleElement = document.createElement('div');
-    titleElement.className = 'carousel-title';
-    
-    const title = item.title_english || item.title || 'No Title';
-    
-    if (item.score) {
-      titleElement.innerHTML = `
-        ${title}
-        <div class="carousel-rating">★ ${item.score}</div>
-      `;
-    } else {
-      titleElement.textContent = title;
-    }
-    
-    // Make item clickable if it has an ID
-    if (item.mal_id || item.id) {
-      itemElement.addEventListener('click', () => {
-        window.location.hash = `#/detail/${item.mal_id || item.id}`;
-      });
-    }    // Set fixed height and width for the item element
-    itemElement.style.height = ITEM_HEIGHT;    itemElement.style.width = ITEM_WIDTH;
-    
-    // Mark clones with data attribute for potential styling or identification
+    // Mark clones with data attribute for potential styling
     if (isClone) {
       itemElement.dataset.clone = "true";
     }
     
-    // Assemble item
-    itemElement.appendChild(imageContainer);
-    itemElement.appendChild(titleElement);
     return itemElement;
   }
   
@@ -232,7 +186,8 @@ export default function Carousel(containerEl, itemsArray) {
     // Ensure at least 1 item is shown, and not more than 5
     return Math.max(1, Math.min(5, visibleCount));
   }
-    /**
+  
+  /**
    * Go to a specific slide by index
    */
   function goToSlide(index) {
@@ -277,7 +232,8 @@ export default function Carousel(containerEl, itemsArray) {
       isAnimating = false;
     }, 500); // Match transition duration from CSS
   }
-    /**
+  
+  /**
    * Go to next slide
    */
   function goToNext() {
@@ -285,7 +241,8 @@ export default function Carousel(containerEl, itemsArray) {
     const nextIndex = currentIndex + visibleItems;
     goToSlide(nextIndex);
   }
-    /**
+  
+  /**
    * Go to previous slide
    */
   function goToPrevious() {
@@ -309,7 +266,8 @@ export default function Carousel(containerEl, itemsArray) {
       goToSlide(Math.max(0, currentIndex - visibleItems));
     }
   }
-    /**
+  
+  /**
    * Update carousel when window is resized
    */
   function handleResize() {
@@ -356,7 +314,8 @@ export default function Carousel(containerEl, itemsArray) {
     
     const styleSheet = document.createElement('style');
     styleSheet.id = 'carousel-styles';
-    styleSheet.textContent = `      .carousel {
+    styleSheet.textContent = `
+      .carousel {
         position: relative;
         width: 100%;
         overflow: hidden;
@@ -364,81 +323,31 @@ export default function Carousel(containerEl, itemsArray) {
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         margin: 20px 0;
         background-color: #f8f8f8;
-        height: ${ITEM_HEIGHT} 
-        /* Width remains 100% to fill container, but content inside has fixed widths */
-      }.carousel-track {
+      }
+      
+      .carousel-track {
         display: flex;
         transition: transform 0.5s ease;
-        height: ${ITEM_HEIGHT};
-        /* Width will be set dynamically in JS based on number of items */
-      }.carousel-item {
+      }
+      
+      .carousel-item {
         flex: 0 0 ${ITEM_WIDTH};
         padding: 12px;
         box-sizing: border-box;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-        height: ${ITEM_HEIGHT};
         width: ${ITEM_WIDTH};
       }
       
-      .carousel-item:hover {
+      /* Ensure AnimeCard fills the carousel item */
+      .carousel-item .anime-card {
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
+      }
+      
+      /* Style overrides for AnimeCard inside carousel */
+      .carousel-item .anime-card:hover {
         transform: translateY(-5px);
-      }      .carousel-image-container {
-        position: relative;
-        overflow: hidden;
-        border-radius: 6px;
-        background-color: #f0f0f0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: ${IMAGE_HEIGHT};
-        width: ${IMAGE_WIDTH};
-        margin: 0 auto;
-      }      .carousel-item img {
-        width: ${IMAGE_WIDTH};
-        height: ${IMAGE_HEIGHT};
-        object-fit: cover;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-      
-      .carousel-item img.loaded {
-        opacity: 1;
-      }
-      
-      .carousel-spinner {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 30px;
-        height: 30px;
-        border: 3px solid rgba(0, 0, 0, 0.1);
-        border-top-color: #3498db;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
-      @keyframes spin {
-        to { transform: translate(-50%, -50%) rotate(360deg); }
-      }
-        .carousel-title {
-        margin-top: 12px;
-        font-size: 0.95rem;
-        font-weight: bold;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        width: ${IMAGE_WIDTH};
-        margin-left: auto;
-        margin-right: auto;
-      }
-      
-      .carousel-rating {
-        font-size: 0.85rem;
-        color: #f5c518;
-        margin-top: 4px;
+        transition: transform 0.3s ease;
       }
       
       .carousel-control {
@@ -476,13 +385,9 @@ export default function Carousel(containerEl, itemsArray) {
       .carousel-control.next {
         right: 10px;
       }
-        /* Item clones styling can be added if desired */
-      [data-clone="true"] {
-        /* You could style clones differently if needed */
-      }
-        /* Responsive adjustments */
+      
+      /* Responsive adjustments */
       @media (max-width: 992px) {
-        /* Keep consistent width regardless of screen size */
         .carousel-control {
           width: 32px;
           height: 32px;
@@ -491,7 +396,7 @@ export default function Carousel(containerEl, itemsArray) {
       }
       
       @media (max-width: 576px) {
-        .carousel-item:hover {
+        .carousel-item .anime-card:hover {
           transform: none;
         }
         
@@ -503,7 +408,8 @@ export default function Carousel(containerEl, itemsArray) {
       }
     `;
     document.head.appendChild(styleSheet);
-      // Calculate carousel track width based on items
+    
+    // Calculate carousel track width based on items
     const trackWidth = itemsArray.length * parseInt(ITEM_WIDTH) + 'px';
     track.style.width = trackWidth;
   }
