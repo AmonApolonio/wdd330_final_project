@@ -7,15 +7,13 @@ import {
   getRandomQuoteByCharacter
 } from '../api/animequotes.js';
 
-class QuotesView {
-  constructor() {
+class QuotesView {  constructor() {
     this.currentPage = 1;
     this.quotesPerPage = 18; // Display 18 quotes per page
     this.allQuotes = []; // Store all fetched quotes for client-side pagination
     this.filters = {
       character: '',
-      show: '',
-      random: false
+      show: ''
     };
   }
 
@@ -26,8 +24,7 @@ class QuotesView {
     // Get app container
     const appElement = document.getElementById("app");
     
-    if (appElement) {
-      // Render the quotes page HTML structure
+    if (appElement) {      // Render the quotes page HTML structure
       appElement.innerHTML = `
         <section class="quotes-view">
           <h1>Anime Quotes</h1>
@@ -42,11 +39,6 @@ class QuotesView {
               <div class="filter-group">
                 <label for="show-filter">Anime:</label>
                 <input type="text" id="show-filter" placeholder="Filter by anime">
-              </div>
-              
-              <div class="filter-group checkbox">
-                <input type="checkbox" id="random-filter">
-                <label for="random-filter">Random Quote</label>
               </div>
             </div>
             
@@ -72,8 +64,7 @@ class QuotesView {
 
   /**
    * Set up event listeners for the quotes view
-   */
-  setupEventListeners() {
+   */  setupEventListeners() {
     // Apply filter button
     const applyFilterBtn = document.getElementById('apply-filters');
     if (applyFilterBtn) {
@@ -81,7 +72,6 @@ class QuotesView {
         this.currentPage = 1;
         this.filters.character = document.getElementById('character-filter').value.trim();
         this.filters.show = document.getElementById('show-filter').value.trim();
-        this.filters.random = document.getElementById('random-filter').checked;
         this.loadQuotes();
       });
     }
@@ -113,8 +103,7 @@ class QuotesView {
         }
       });
     }
-  }
-  /**
+  }  /**
    * Load quotes based on current filters
    */
   async loadQuotes() {
@@ -131,69 +120,33 @@ class QuotesView {
       `;
       
       // Extract filters
-      const { character, show, random } = this.filters;
+      const { character, show } = this.filters;
       
       let quotes;
       let startTime = Date.now(); // Track API call time
       
       // Logic for determining which API call to make
-      if (random) {        if (character && show) {
-          // Random quote for a character from a specific anime
-          // Note: API might not support this combination directly, but we'll try character first
-          try {
-            // API wrapper now normalizes the response
-            const quote = await getRandomQuoteByCharacter(character);
-            // Convert to array format for consistent processing
-            quotes = [quote];
-          } catch (err) {
-            // Fallback to searching by anime if character fails
-            // API wrapper now normalizes the response
-            const quote = await getRandomQuoteByAnime(show);
-            quotes = [quote];
-          }} else if (character) {
-          // Random quote for a character (API wrapper now normalizes the response)
-          const quote = await getRandomQuoteByCharacter(character);
-          // Convert to array
-          quotes = [quote];
-        } else if (show) {
-          // Random quote from an anime (API wrapper now normalizes the response)
-          const quote = await getRandomQuoteByAnime(show);
-          // Convert to array
-          quotes = [quote];
-        } else {          // Just a random quote (API wrapper now normalizes the response)
-          const quote = await getRandomQuote();
-          // Convert to array
-          quotes = [quote];
-        }
-        
-        // Hide pagination for random quotes
-        if (paginationContainer) {
-          paginationContainer.innerHTML = '';
-        }
-      } else {
-        // Non-random quotes with pagination
-        if (character && show) {
-          // This might not be directly supported by the API, choose one filter
-          // For now, prioritize character filter
-          try {
-            quotes = await searchQuotesByCharacter(character, this.currentPage);
-            
-            // If no results, try searching by anime instead
-            if (Array.isArray(quotes) && quotes.length === 0) {
-              quotes = await searchQuotesByAnime(show, this.currentPage);
-            }
-          } catch (err) {
-            // Fallback to searching by anime if character fails
+      if (character && show) {
+        // This might not be directly supported by the API, choose one filter
+        // For now, prioritize character filter
+        try {
+          quotes = await searchQuotesByCharacter(character, this.currentPage);
+          
+          // If no results, try searching by anime instead
+          if (Array.isArray(quotes) && quotes.length === 0) {
             quotes = await searchQuotesByAnime(show, this.currentPage);
           }
-        } else if (character) {
-          quotes = await searchQuotesByCharacter(character, this.currentPage);
-        } else if (show) {
+        } catch (err) {
+          // Fallback to searching by anime if character fails
           quotes = await searchQuotesByAnime(show, this.currentPage);
-        } else {
-          quotes = await getAllQuotes(this.currentPage);
         }
-        }
+      } else if (character) {
+        quotes = await searchQuotesByCharacter(character, this.currentPage);
+      } else if (show) {
+        quotes = await searchQuotesByAnime(show, this.currentPage);
+      } else {
+        quotes = await getAllQuotes(this.currentPage);
+      }
       
       // Calculate API response time
       const responseTime = Date.now() - startTime;
@@ -207,20 +160,16 @@ class QuotesView {
       this.renderQuotes(quotes, quotesContainer);
       
       // Now that allQuotes is set, we can show pagination
-      if (!random && paginationContainer) {
+      if (paginationContainer) {
         this.renderPagination(paginationContainer, quotes);
       }
-      
-      // Display search summary if filters are applied
+        // Display search summary if filters are applied
       if (character || show) {
         const filterSummary = document.createElement('div');
         filterSummary.className = 'filter-summary';
-        
-        let summaryText = 'Showing quotes';
+          let summaryText = 'Showing quotes';
         if (character) summaryText += ` for character "${character}"`;
-        if (show) {
-          summaryText += character ? ` from "${show}"` : ` from "${show}"`;
-        }
+        if (show) summaryText += ` from "${show}"`;
         
         filterSummary.textContent = summaryText;
         
