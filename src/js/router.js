@@ -102,7 +102,7 @@ function renderHome() {
     console.log("Fallback renderHome function called");
     appElement.innerHTML = `
       <section class="home-view">
-        <h1>Welcome to Anime Browse</h1>
+        <h1>Welcome to AniChan</h1>
         <p>Loading home view content...</p>
       </section>
     `;

@@ -44,7 +44,7 @@ class HomeView {
       // Create the complete home view structure
       appElement.innerHTML = `
         <section class="home-view">
-          <h1>Welcome to Anime Browse</h1>
+          <h1>Welcome to AniChan</h1>
           <!-- Featured section with carousel container -->
           <div id="trending-section" class="trending-anime">
             <h2>Featured Anime</h2>
