@@ -1,0 +1,165 @@
+/* Quotes View Styles */
+
+.quotes-view {
+  max-width: 1200px;
+}
+
+.quotes-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background-color: var(--color-bg-secondary);
+  padding: 1.2rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 2rem;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--box-shadow);
+}
+
+.filter-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  flex: 1;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.filter-group input[type="text"] {
+  width: 100%;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.filter-group.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-group.checkbox label {
+  margin-bottom: 0;
+}
+
+.quotes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Filter summary styles */
+.filter-summary {
+  margin: 1rem 0;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.quote-card {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--color-border);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.quote-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  position: relative;
+  padding: 0 1rem;
+}
+
+.quote-mark {
+  font-family: 'Georgia', serif;
+  font-size: 3rem;
+  position: absolute;
+  color: rgba(23, 71, 176, 0.2);
+  line-height: 1;
+}
+
+.quote-meta {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.quote-character {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.quote-anime {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+#new-quote-btn {
+  display: inline-block;
+  width: auto;
+  min-width: 100px;
+  align-self: flex-start;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+#new-quote-btn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+#new-quote-btn:hover:before {
+  transform: translateX(0);
+}
+
+/* New Quote Button hover effect to match the Save Anime button */
+#new-quote-btn:hover {
+  background-color: var(--color-hover);
+  transform: translateY(-2px);
+}
+
+#new-quote-btn:disabled {
+  background-color: rgba(23, 71, 176, 0.5);
+  cursor: not-allowed;
+}
+
+.quote-actions {
+  display: flex;
+  margin-top: 15px;
+}

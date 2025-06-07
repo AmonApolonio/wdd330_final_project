@@ -1,0 +1,85 @@
+/* Base styles, CSS variables, and reset */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Display:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --color-bg-primary: #121419;
+  --color-bg-secondary: #161922;
+  --color-text-primary: #dbe6ff;
+  --color-text-secondary: #a8b9e0;
+  --color-accent: #1747b0;
+  --color-hover: #2558c7;
+  --color-border: #2a3040;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+}
+
+/* Custom scrollbar for better integration with dark theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Improved focus styles for accessibility */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Custom text selection */
+::selection {
+  background-color: rgba(23, 71, 176, 0.4);
+  color: var(--color-text-primary);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  transition: var(--transition);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

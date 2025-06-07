@@ -1,12 +1,12 @@
 import { getAnimeFull } from '../api/jikan.js';
 import { searchQuotesByAnime } from '../api/animequotes.js';
 
-class DetailView {  
+class DetailView {
   constructor() {
     // Array to store quotes for the current anime
     this.animeQuotes = [];
   }
-  
+
   /**
    * Render the anime detail view
    * @param {string|number} id - The anime ID
@@ -24,7 +24,7 @@ class DetailView {
           </div>
         </section>
       `;
-      
+
       // Now load the details after ensuring the container exists
       if (id) {
         this.loadAnimeDetails(id);
@@ -37,35 +37,35 @@ class DetailView {
       }
     }
   }
-    /**
-   * Load and display the anime details
-   * @param {string|number} id - The anime ID
-   */
+  /**
+ * Load and display the anime details
+ * @param {string|number} id - The anime ID
+ */
   async loadAnimeDetails(id) {
     const detailContainer = document.getElementById('anime-detail-container');
-    
+
     // Check if container exists, if not create it
     if (!detailContainer) {
       console.error('Anime detail container not found. Re-rendering view.');
       this.render(id);
       return;
     }
-    
+
     try {
       // Show loading state
       detailContainer.innerHTML = '<p>Loading anime details...</p>';
-      
+
       // Fetch the anime details
       const response = await getAnimeFull(id);
-      
+
       // Check if we have data
       if (response && response.data) {
         // Render the anime details immediately, without waiting for quotes
         detailContainer.innerHTML = this.createAnimeDetailHTML(response.data);
-        
+
         // Set up event listeners for interactive elements
         this.setupEventListeners(response.data);
-        
+
         // Load quotes asynchronously after main content is loaded
         this.loadAnimeQuotes(response.data.title_english || response.data.title);
       } else {
@@ -79,14 +79,14 @@ class DetailView {
           <button id="retry-detail">Retry</button>
         </div>
       `;
-      
+
       // Add retry functionality
       document.getElementById('retry-detail').addEventListener('click', () => {
         this.loadAnimeDetails(id);
       });
     }
   }
-  
+
   /**
    * Load and display quotes for an anime asynchronously
    * @param {string} animeTitle - The title of the anime to search quotes for
@@ -94,27 +94,27 @@ class DetailView {
   async loadAnimeQuotes(animeTitle) {
     const quoteContainer = document.getElementById('anime-quote-container');
     if (!quoteContainer) return;
-    
+
     try {
       // Clear previous anime quotes
       this.animeQuotes = [];
-      
+
       // Fetch all quotes for this anime
       const quotes = await searchQuotesByAnime(animeTitle);
-      
+
       // Store quotes for future use
       if (Array.isArray(quotes)) {
         this.animeQuotes = quotes;
       } else if (quotes && quotes.data && Array.isArray(quotes.data)) {
         this.animeQuotes = quotes.data;
       }
-      
+
       // Display quotes if available
       if (this.animeQuotes.length > 0) {
         // Get a random quote
         const randomIndex = Math.floor(Math.random() * this.animeQuotes.length);
         const quoteObj = this.animeQuotes[randomIndex];
-        
+
         quoteContainer.innerHTML = `
           <section class="anime-quote anime-card">
             <div class="anime-card-content">
@@ -125,11 +125,13 @@ class DetailView {
                 <p class="quote-character">— ${quoteObj.character}</p>
                 <p class="quote-anime">${quoteObj.show}</p>
               </div>
-              <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
+              <div class="quote-actions">
+                <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
+              </div>
             </div>
           </section>
         `;
-        
+
         // Set up event listener for new quote button
         const newQuoteBtn = document.getElementById('new-quote-btn');
         if (newQuoteBtn) {
@@ -146,7 +148,7 @@ class DetailView {
       quoteContainer.innerHTML = '';
     }
   }
-  
+
   /**
    * Handle clicking the "New Quote" button
    */
@@ -157,28 +159,30 @@ class DetailView {
       newQuoteBtn.disabled = true;
       newQuoteBtn.textContent = 'Loading...';
     }
-    
+
     try {
       // Check if we have quotes available
       if (this.animeQuotes.length > 0) {
         // Get a random quote from our already fetched quotes
         const randomIndex = Math.floor(Math.random() * this.animeQuotes.length);
         const quoteObj = this.animeQuotes[randomIndex];
-        
+
         // Update the quote display
         const quoteSection = document.querySelector('.anime-quote .anime-card-content');
         if (quoteSection && quoteObj) {
           quoteSection.innerHTML = `
-            <div class="quote-text">
+          <div class="quote-text">
               <span class="quote-mark">"</span>${quoteObj.quote}<span class="quote-mark">"</span>
             </div>
             <div class="quote-meta">
               <p class="quote-character">— ${quoteObj.character}</p>
               <p class="quote-anime">${quoteObj.show}</p>
             </div>
-            <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
+            <div class="quote-actions">
+              <button id="new-quote-btn" class="primary-btn" type="button">New Quote</button>
+            </div>
           `;
-          
+
           // Re-attach event listener to the new button
           const newBtn = document.getElementById('new-quote-btn');
           if (newBtn) {
@@ -188,7 +192,7 @@ class DetailView {
       } else {
         // No quotes available, show error
         alert('No quotes available for this anime.');
-        
+
         // Re-enable button
         const btn = document.getElementById('new-quote-btn');
         if (btn) {
@@ -199,7 +203,7 @@ class DetailView {
     } catch (e) {
       console.error('Error displaying new quote:', e);
       alert('Failed to display a new quote.');
-      
+
       // Re-enable button
       const btn = document.getElementById('new-quote-btn');
       if (btn) {
@@ -208,7 +212,7 @@ class DetailView {
       }
     }
   }
-  
+
   /**
    * Create the HTML for the anime detail page
    * @param {Object} anime - Anime data from API
@@ -217,16 +221,16 @@ class DetailView {
   createAnimeDetailHTML(anime) {
     // Default image if none provided
     const imageUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/225x318?text=No+Image';
-    
+
     // Use a sensible title (English or default)
     const title = anime.title_english || anime.title;
-    
+
     // Format airing status
     const status = anime.status || 'Unknown status';
-    
+
     // Format the genres
     const genres = anime.genres?.map(genre => genre.name).join(', ') || 'Not categorized';
-    
+
     // Create HTML
     return `
       <div class="anime-detail-content">
@@ -276,11 +280,11 @@ class DetailView {
               ${anime.relations.map(relation => `
                 <li>
                   <strong>${relation.relation}:</strong> 
-                  ${relation.entry.map(entry => 
-                    entry.type === 'anime' ? 
-                    `<a href="#/detail/${entry.mal_id}">${entry.name}</a>` : 
-                    entry.name
-                  ).join(', ')}
+                  ${relation.entry.map(entry =>
+      entry.type === 'anime' ?
+        `<a href="#/detail/${entry.mal_id}">${entry.name}</a>` :
+        entry.name
+    ).join(', ')}
                 </li>
               `).join('')}
             </ul>
@@ -304,7 +308,7 @@ class DetailView {
       </div>
     `;
   }
-  
+
   /**
    * Set up event listeners for interactive elements
    * @param {Object} anime - Anime data from API
@@ -318,7 +322,7 @@ class DetailView {
       });
     }
   }
-  
+
   /**
    * Save anime to user's list in local storage
    * @param {Object} anime - Anime data to save
@@ -327,10 +331,10 @@ class DetailView {
     try {
       // Get current list from localStorage or initialize empty array
       const myList = JSON.parse(localStorage.getItem('myAnimeList') || '[]');
-      
+
       // Check if anime is already in the list
       const exists = myList.some(item => item.mal_id === anime.mal_id);
-      
+
       if (!exists) {
         // Create a simplified version to avoid storing too much data
         const animeToSave = {
@@ -342,24 +346,24 @@ class DetailView {
           episodes: anime.episodes,
           saved_at: new Date().toISOString()
         };
-        
+
         // Add to list
         myList.push(animeToSave);
-        
+
         // Save back to localStorage
         localStorage.setItem('myAnimeList', JSON.stringify(myList));
-        
+
         // Update the button to indicate it's saved
         const saveButton = document.getElementById('save-anime-btn');
         saveButton.textContent = 'Added to My List';
         saveButton.disabled = true;
-        
+
         // Show a success message
         alert('Anime added to your list!');
       } else {
         // Already in list
         alert('This anime is already in your list!');
-        
+
         // Update the button to indicate it's already saved
         const saveButton = document.getElementById('save-anime-btn');
         saveButton.textContent = 'Already in My List';

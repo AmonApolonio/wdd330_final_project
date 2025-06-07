@@ -1,0 +1,126 @@
+/* Anime detail page specific styles */
+
+.anime-detail-content {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--color-border);
+}
+
+.anime-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.anime-detail-image {
+  flex: 0 0 250px;
+}
+
+.anime-detail-image img {
+  width: 100%;
+  max-width: 250px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.anime-detail-info {
+  flex: 1 1 300px;
+}
+
+.anime-detail-info h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+}
+
+.anime-detail-info p {
+  margin-bottom: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
+.anime-synopsis {
+  margin-bottom: 2rem;
+}
+
+.anime-synopsis h3,
+.anime-trailer h3,
+.anime-relations h3,
+.anime-streaming h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+  color: var(--color-text-primary);
+}
+
+.anime-synopsis h3:after,
+.anime-trailer h3:after,
+.anime-relations h3:after,
+.anime-streaming h3:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background-color: var(--color-accent);
+}
+
+.anime-synopsis p {
+  line-height: 1.8;
+}
+
+.anime-relations,
+.anime-streaming {
+  margin-top: 2rem;
+}
+
+.anime-relations ul,
+.anime-streaming ul {
+  list-style-type: none;
+}
+
+.anime-relations li,
+.anime-streaming li {
+  margin-bottom: 0.5rem;
+}
+
+.responsive-iframe-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  margin-top: 1rem;
+}
+
+.responsive-iframe-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+#save-anime-btn {
+  background-color: var(--color-accent);
+  color: var(--color-text-primary);
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1rem;
+  transition: var(--transition);
+}
+
+#save-anime-btn:hover {
+  background-color: var(--color-hover);
+}
+
+#save-anime-btn:disabled {
+  background-color: rgba(23, 71, 176, 0.5);
+  cursor: not-allowed;
+}

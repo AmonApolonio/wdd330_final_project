@@ -1,0 +1,62 @@
+/* Responsive styles */
+
+@media screen and (max-width: 768px) {
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  #search-bar-container {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .main-nav ul {
+    flex-wrap: wrap;
+  }
+  
+  .anime-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .quotes-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .anime-detail-header {
+    flex-direction: column;
+  }
+  
+  .anime-detail-image {
+    margin: 0 auto;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .filter-inputs {
+    flex-direction: column;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .anime-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  #app {
+    padding: 1rem;
+  }
+  
+  .pagination-btn {
+    min-width: 30px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.9rem;
+  }
+}
