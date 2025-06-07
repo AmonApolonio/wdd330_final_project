@@ -6,33 +6,97 @@
   padding: 1rem 0;
 }
 
-.header-top {
+.header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 2rem;
-  margin-bottom: 1rem;
+  position: relative; /* Added for absolute positioned children */
+  min-height: 60px; /* Ensure minimum height for header */
 }
 
 .logo-container {
   display: flex;
   align-items: center;
+  min-width: 120px;
+  max-width: 180px;
+  flex-shrink: 0;
+  margin-right: 25px;
+  z-index: 20;
+  transition: min-width 0.3s, max-width 0.3s;
 }
 
 .logo-container img {
   height: 40px;
-  margin-right: 10px;
+  max-width: 100%;
 }
 
-.logo-container a {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
+/* Search bar styling */
 #search-bar-container {
+  position: static; /* Changed to static to allow absolute positioning relative to header */
   display: flex;
-  width: 50%;
+  justify-content: flex-end;
+  transition: all 0.3s ease;
+  width: auto;
+  min-width: 40px;
+  z-index: 100;
+}
+
+/* Search icon styles */
+#search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-accent);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  z-index: 10;
+}
+
+#search-icon:hover, #menu-toggle:hover {
+  background-color: var(--color-hover);
+}
+
+/* Icon SVG styles */
+#search-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Search input styles */
+.search-form {
+  position: absolute;
+  left: min(200px, calc(100% * 0.25)); /* Increased space for logo */
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  width: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 9;
+  opacity: 0;
+}
+
+.search-form.expanded {
+  width: calc(100% - 270px); /* Increased space for logo and search icon */
+  opacity: 1;
+  box-shadow: var(--box-shadow);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--border-radius);
+  padding: 0 5px;
+}
+
+/* Hide navigation when search is expanded */
+.search-form.expanded ~ .main-nav {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 #search-input {
@@ -40,51 +104,50 @@
   padding: 8px 12px;
   background-color: var(--color-bg-primary);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius) 0 0 var(--border-radius);
+  border-radius: var(--border-radius);
   font-size: 1rem;
   color: var(--color-text-primary);
   font-family: 'Inter', sans-serif;
-}
-
-#search-button {
-  padding: 8px 16px;
-  background-color: var(--color-accent);
-  color: var(--color-text-primary);
-  border: none;
-  border-radius: 0 var(--border-radius) var(--border-radius) 0;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: var(--transition);
-}
-
-#search-button:hover {
-  background-color: var(--color-hover);
+  width: 100%;
+  transition: opacity 0.2s ease;
+  box-shadow: var(--box-shadow);
 }
 
 /* Navigation Styles */
 .main-nav {
-  background-color: var(--color-bg-secondary);
-  padding: 0.5rem 2rem;
-  border-top: 1px solid var(--color-border);
+  flex: 1;
+  margin: 0 20px;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  opacity: 1;
+  visibility: visible;
 }
 
 .main-nav ul {
   display: flex;
   list-style: none;
   justify-content: center;
-  gap: 1rem;
+  gap: min(1rem, 2vw); /* Responsive gap that won't get too large */
+  flex-wrap: nowrap; /* Prevent wrapping */
+  max-width: 700px; /* Limit maximum width of the navigation */
+  margin: 0 auto;
 }
 
 .main-nav li {
   margin: 0;
+  flex: 0 1 auto; /* Don't stretch items on large screens */
 }
 
 .main-nav a {
   color: var(--color-text-primary);
   font-weight: 500;
-  padding: 8px 16px;
+  padding: 8px min(16px, 2vw); /* Responsive padding that won't get too large */
   border-radius: var(--border-radius);
   transition: var(--transition);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  text-align: center;
 }
 
 .main-nav a:hover {
@@ -102,11 +165,10 @@
 
 /* Hamburger Menu Styles */
 #menu-toggle {
-  display: none;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0;
 }
 
 .hamburger-icon, 
@@ -148,24 +210,94 @@
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* Responsive header styles */
-@media screen and (max-width: 768px) {
-  #menu-toggle {
-    display: block;
+/* Global search active state */
+@media screen and (min-width: 769px) {
+  /* Only hide nav on desktop/tablet when search is active */
+  body.search-active .main-nav {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
-  
-  .header-top {
+}
+
+/* Logo styles when search is expanded */
+body.search-active .logo-container {
+  min-width: 50px;
+  max-width: 60px;
+  transition: min-width 0.3s, max-width 0.3s;
+}
+
+/* Header actions container for search and menu buttons */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Increased gap between buttons */
+}
+
+#menu-toggle {
+  display: none; /* Hide by default, show only on mobile */
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-accent);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  z-index: 10;
+}
+
+/* Responsive header styles */
+@media screen and (max-width: 768px) {  
+  .header-content {
     flex-wrap: wrap;
   }
   
-  #search-bar-container {
+  .logo-container {
+    margin-right: auto;
+  }
+  
+  /* Show hamburger menu on mobile */
+  #menu-toggle {
+    display: flex;
+  }
+  
+  .main-nav {
+    display: none;
     width: 100%;
     order: 3;
-    margin-top: 1rem;
+    margin: 1rem 0 0 0;
+    opacity: 1;
+    visibility: visible;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--color-bg-secondary);
+    padding: 1rem;
+    z-index: 50;
+    box-shadow: var(--box-shadow);
+  }
+  
+  .main-nav.active {
+    display: block;
+  }
+  
+  /* Override search active state for mobile */
+  body.search-active .main-nav.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    display: block;
   }
   
   .main-nav ul {
     flex-direction: column;
     align-items: center;
+  }
+    .header-actions {
+    order: 2;
   }
 }

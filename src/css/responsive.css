@@ -1,14 +1,40 @@
 /* Responsive styles */
 
-@media screen and (max-width: 768px) {
-  .header-top {
-    flex-direction: column;
-    align-items: flex-start;
+@media screen and (min-width: 769px) and (max-width: 850px) {
+  .main-nav {
+    margin: 0 10px;
   }
   
-  #search-bar-container {
-    width: 100%;
-    margin-top: 1rem;
+  .main-nav ul {
+    gap: 0.5rem;
+  }
+  
+  .main-nav a {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .header-content {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .logo-container {
+    min-width: 100px;
+    max-width: 140px;
+  }
+  .header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Increased gap between buttons */
+  }
+  
+  .search-form.expanded {
+    width: calc(100% - 180px);
+    left: min(150px, calc(100% * 0.18));
   }
   
   .main-nav ul {
@@ -52,6 +78,36 @@
   
   #app {
     padding: 1rem;
+  }
+  
+  .header-content {
+    padding: 0 1rem;
+  }
+  
+  .logo-container {
+    min-width: 80px;
+    max-width: 120px;
+  }
+  
+  .search-form.expanded {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: calc(100% - 2rem);
+    margin-top: 5px;
+    padding: 5px;
+    background-color: var(--color-bg-secondary);
+    z-index: 10;
+    box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius);
+  }
+  
+  /* Ensure mobile menu displays properly when both active */
+  body.search-active .main-nav.active {
+    display: block;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--color-border);
   }
   
   .pagination-btn {

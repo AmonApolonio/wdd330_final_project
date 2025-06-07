@@ -40,13 +40,21 @@ function initHamburgerMenu() {
   const mainNav = document.querySelector('.main-nav');
   
   if (menuToggle && mainNav) {
-    menuToggle.addEventListener('click', () => {
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent click from closing search
       mainNav.classList.toggle('active');
       menuToggle.classList.toggle('menu-active');
       
       // Update aria-expanded attribute for accessibility
       const isExpanded = mainNav.classList.contains('active');
       menuToggle.setAttribute('aria-expanded', isExpanded);
+      
+      // If search is active, ensure mobile menu is still visible
+      if (document.body.classList.contains('search-active') && mainNav.classList.contains('active')) {
+        mainNav.style.opacity = '1';
+        mainNav.style.visibility = 'visible';
+        mainNav.style.pointerEvents = 'auto';
+      }
     });
     
     // Close menu when a link is clicked
