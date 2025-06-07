@@ -277,6 +277,24 @@ class QuotesView {  constructor() {
     // Filter out any invalid quotes
     this.allQuotes = this.allQuotes.filter(quote => quote && typeof quote === 'object');
     
+    // Sort quotes by length (shortest first, but very short quotes last)
+    this.allQuotes.sort((a, b) => {
+      const quoteA = a.quote || '';
+      const quoteB = b.quote || '';
+      
+      // Consider quotes with less than 15 characters as "very short"
+      // These will be placed at the end
+      const isVeryShortA = quoteA.length < 50;
+      const isVeryShortB = quoteB.length < 50;
+      
+      // If one quote is very short and the other isn't
+      if (isVeryShortA && !isVeryShortB) return 1; // A is very short, move to end
+      if (!isVeryShortA && isVeryShortB) return -1; // B is very short, move to end
+      
+      // Otherwise sort by length (shortest first)
+      return quoteA.length - quoteB.length;
+    });
+    
     // If after filtering we have no valid quotes
     if (this.allQuotes.length === 0) {
       container.innerHTML = '<p>No valid quotes found.</p>';
