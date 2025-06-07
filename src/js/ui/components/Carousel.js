@@ -14,9 +14,6 @@
 // Import AnimeCard and its utility functions
 import AnimeCard from './AnimeCard.js';
 
-// Import carousel styles
-import '../../../css/carousel.css';
-
 /**
  * Creates and initializes a carousel
  * @param {HTMLElement} containerEl - The container element where the carousel will be placed
