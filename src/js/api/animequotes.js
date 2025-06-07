@@ -74,7 +74,17 @@ export function fetchQuotes(options = {}) {
  * @returns {Promise<Object>} - A random quote
  */
 function _getRandomQuote() {
-  return fetchQuotes({ random: true });
+  return fetchQuotes({ random: true }).then(response => {
+    // Ensure consistent response format
+    // If response is an array or has a data property containing array, get first item
+    if (Array.isArray(response)) {
+      return response[0];
+    } else if (response && response.data && Array.isArray(response.data)) {
+      return response.data[0];
+    }
+    // Otherwise, return the response as-is assuming it's a quote object
+    return response;
+  });
 }
 
 // Random quotes are cached for a short time only
@@ -90,7 +100,15 @@ export const getRandomQuote = withCache(
  * @returns {Promise<Object>} - A random quote by the character
  */
 function _getRandomQuoteByCharacter(character) {
-  return fetchQuotes({ random: true, character });
+  return fetchQuotes({ random: true, character }).then(response => {
+    // Ensure consistent response format
+    if (Array.isArray(response)) {
+      return response[0];
+    } else if (response && response.data && Array.isArray(response.data)) {
+      return response.data[0];
+    }
+    return response;
+  });
 }
 
 export const getRandomQuoteByCharacter = withCache(
@@ -105,7 +123,15 @@ export const getRandomQuoteByCharacter = withCache(
  * @returns {Promise<Object>} - A random quote from the show
  */
 function _getRandomQuoteByAnime(show) {
-  return fetchQuotes({ random: true, show });
+  return fetchQuotes({ random: true, show }).then(response => {
+    // Ensure consistent response format
+    if (Array.isArray(response)) {
+      return response[0];
+    } else if (response && response.data && Array.isArray(response.data)) {
+      return response.data[0];
+    }
+    return response;
+  });
 }
 
 export const getRandomQuoteByAnime = withCache(

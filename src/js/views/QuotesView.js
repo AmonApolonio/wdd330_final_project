@@ -137,34 +137,33 @@ class QuotesView {
       let startTime = Date.now(); // Track API call time
       
       // Logic for determining which API call to make
-      if (random) {
-        if (character && show) {
+      if (random) {        if (character && show) {
           // Random quote for a character from a specific anime
           // Note: API might not support this combination directly, but we'll try character first
           try {
-            quotes = await getRandomQuoteByCharacter(character);
+            // API wrapper now normalizes the response
+            const quote = await getRandomQuoteByCharacter(character);
             // Convert to array format for consistent processing
-            quotes = [quotes];
+            quotes = [quote];
           } catch (err) {
             // Fallback to searching by anime if character fails
-            quotes = await getRandomQuoteByAnime(show);
-            quotes = [quotes];
-          }
-        } else if (character) {
-          // Random quote for a character
-          quotes = await getRandomQuoteByCharacter(character);
+            // API wrapper now normalizes the response
+            const quote = await getRandomQuoteByAnime(show);
+            quotes = [quote];
+          }} else if (character) {
+          // Random quote for a character (API wrapper now normalizes the response)
+          const quote = await getRandomQuoteByCharacter(character);
           // Convert to array
-          quotes = [quotes];
+          quotes = [quote];
         } else if (show) {
-          // Random quote from an anime
-          quotes = await getRandomQuoteByAnime(show);
+          // Random quote from an anime (API wrapper now normalizes the response)
+          const quote = await getRandomQuoteByAnime(show);
           // Convert to array
-          quotes = [quotes];
-        } else {
-          // Just a random quote
-          quotes = await getRandomQuote();
+          quotes = [quote];
+        } else {          // Just a random quote (API wrapper now normalizes the response)
+          const quote = await getRandomQuote();
           // Convert to array
-          quotes = [quotes];
+          quotes = [quote];
         }
         
         // Hide pagination for random quotes
@@ -268,9 +267,7 @@ class QuotesView {
         });
       }
     }
-  }
-
-  /**
+  }  /**
    * Load a completely random quote
    */
   async loadRandomQuote() {
@@ -286,8 +283,10 @@ class QuotesView {
         paginationContainer.innerHTML = '';
       }
       
-      // Get a random quote
+      // Get a random quote (API wrapper now normalizes the response format)
       const quote = await getRandomQuote();
+      
+      console.log('Random quote data:', quote);
       
       // Render the quote
       this.renderQuotes([quote], quotesContainer);
@@ -320,8 +319,20 @@ class QuotesView {
       return;
     }
     
-    // Ensure quotes is an array and store all quotes for pagination
+    // Log what we're trying to render to help debug
+    console.log('Rendering quotes:', quotes);
+    
+    // Ensure quotes is an array of valid quote objects and store all quotes for pagination
     this.allQuotes = Array.isArray(quotes) ? quotes : [quotes];
+    
+    // Filter out any invalid quotes
+    this.allQuotes = this.allQuotes.filter(quote => quote && typeof quote === 'object');
+    
+    // If after filtering we have no valid quotes
+    if (this.allQuotes.length === 0) {
+      container.innerHTML = '<p>No valid quotes found.</p>';
+      return;
+    }
     
     // Check if current page is still valid with the new quote count
     const totalPages = Math.max(1, Math.ceil(this.allQuotes.length / this.quotesPerPage));
@@ -346,21 +357,24 @@ class QuotesView {
    * Create HTML for a quote card
    * @param {Object} quote - The quote data
    * @returns {string} - HTML string
-   */
-  createQuoteCard(quote) {
+   */  createQuoteCard(quote) {
+    // Handle different API response formats (API might return either 'show' or 'anime')
+    const animeTitle = quote.show || quote.anime || 'Unknown Anime';
+    const characterName = quote.character || 'Unknown Character';
+    
     return `
       <div class="quote-card">
         <div class="quote-text">
           <span class="quote-mark">"</span>
-          ${quote.quote}
+          ${quote.quote || ''}
           <span class="quote-mark">"</span>
         </div>        <div class="quote-meta">
-          <p class="quote-character">— ${quote.character}</p>
-          <p class="quote-anime">${quote.show}</p>
+          <p class="quote-character">— ${characterName}</p>
+          <p class="quote-anime">${animeTitle}</p>
         </div>
       </div>
     `;
-  }  /**
+  }/**
    * Render pagination controls
    * @param {HTMLElement} container - The pagination container
    * @param {Array} quotes - The current quotes
