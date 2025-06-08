@@ -21,7 +21,8 @@ export function initializeSearch() {
       searchForm.classList.toggle('expanded');
       document.body.classList.toggle('search-active');
       
-      // Toggle logo between text and icon versions      const logoImg = document.querySelector('.logo-container img');
+      // Toggle logo between text and icon versions      
+      const logoImg = document.querySelector('.logo-container img');
       if (logoImg) {
         if (searchForm.classList.contains('expanded')) {
           logoImg.setAttribute('data-original-src', logoImg.src);
