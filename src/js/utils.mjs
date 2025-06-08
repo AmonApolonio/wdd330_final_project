@@ -27,14 +27,15 @@ export async function loadTemplate(path) {
 export async function loadHeaderFooter() {
   try {
     // Create base path that works both in development and production
-    const basePath = import.meta.env.BASE_URL || "/";
+    const basePath = (import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : "/wdd330_final_project/";
     console.log(`Using base path: ${basePath}`);
-    
-    // Load header template
+      // Load header template
     const headerTemplate = await loadTemplate(`${basePath}partials/header.html`);
     
     // Load footer template
-    const footerTemplate = await loadTemplate(`${basePath}partials/footer.html`);const headerElement = document.querySelector("#main-header");
+    const footerTemplate = await loadTemplate(`${basePath}partials/footer.html`);
+    
+    const headerElement = document.querySelector("#main-header");
     const footerElement = document.querySelector("#main-footer");
 
     if (headerElement && headerTemplate) {
