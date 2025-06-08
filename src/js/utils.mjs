@@ -30,23 +30,11 @@ export async function loadHeaderFooter() {
     const basePath = import.meta.env.BASE_URL || "/";
     console.log(`Using base path: ${basePath}`);
     
-    // Try to load header template
-    let headerTemplate;
-    try {
-      headerTemplate = await loadTemplate(`${basePath}partials/header.html`);
-    } catch (error) {
-      console.log("Trying fallback path for header...");
-      headerTemplate = await loadTemplate(`public/partials/header.html`);
-    }
-
-    // Try to load footer template
-    let footerTemplate;
-    try {
-      footerTemplate = await loadTemplate(`${basePath}partials/footer.html`);
-    } catch (error) {
-      console.log("Trying fallback path for footer...");
-      footerTemplate = await loadTemplate(`public/partials/footer.html`);
-    }    const headerElement = document.querySelector("#main-header");
+    // Load header template
+    const headerTemplate = await loadTemplate(`${basePath}partials/header.html`);
+    
+    // Load footer template
+    const footerTemplate = await loadTemplate(`${basePath}partials/footer.html`);const headerElement = document.querySelector("#main-header");
     const footerElement = document.querySelector("#main-footer");
 
     if (headerElement && headerTemplate) {
