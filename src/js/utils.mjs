@@ -13,8 +13,10 @@ export async function loadTemplate(path) {
 
 export async function loadHeaderFooter() {
   try {
-    const headerTemplate = await loadTemplate("./public/partials/header.html");
-    const footerTemplate = await loadTemplate("./public/partials/footer.html");
+    // Create base path that works both in development and production
+    const basePath = import.meta.env.BASE_URL || "/";
+    const headerTemplate = await loadTemplate(`${basePath}partials/header.html`);
+    const footerTemplate = await loadTemplate(`${basePath}partials/footer.html`);
 
     const headerElement = document.querySelector("#main-header");
     const footerElement = document.querySelector("#main-footer");
