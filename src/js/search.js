@@ -21,12 +21,11 @@ export function initializeSearch() {
       searchForm.classList.toggle('expanded');
       document.body.classList.toggle('search-active');
       
-      // Toggle logo between text and icon versions
-      const logoImg = document.querySelector('.logo-container img');
+      // Toggle logo between text and icon versions      const logoImg = document.querySelector('.logo-container img');
       if (logoImg) {
         if (searchForm.classList.contains('expanded')) {
           logoImg.setAttribute('data-original-src', logoImg.src);
-          logoImg.src = '/images/logo.svg';
+          logoImg.src = '/wdd330_final_project/images/logo.svg';
         } else {
           // Restore original logo if it was saved
           const originalSrc = logoImg.getAttribute('data-original-src');
