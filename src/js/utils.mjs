@@ -6,28 +6,65 @@ export function renderWithTemplate(template, parentElement, data, callback, posi
 }
 
 export async function loadTemplate(path) {
-  const res = await fetch(path);
-  const template = await res.text();
-  return template;
+  try {
+    console.log(`Attempting to fetch template from: ${path}`);
+    const res = await fetch(path);
+    
+    if (!res.ok) {
+      console.error(`Failed to load template: ${path}, Status: ${res.status}`);
+      throw new Error(`Failed to load template: ${path}, Status: ${res.status}`);
+    }
+    
+    const template = await res.text();
+    console.log(`Successfully loaded template from: ${path}`);
+    return template;
+  } catch (error) {
+    console.error(`Error loading template from ${path}:`, error);
+    throw error;
+  }
 }
 
 export async function loadHeaderFooter() {
   try {
     // Create base path that works both in development and production
     const basePath = import.meta.env.BASE_URL || "/";
-    const headerTemplate = await loadTemplate(`${basePath}partials/header.html`);
-    const footerTemplate = await loadTemplate(`${basePath}partials/footer.html`);
+    console.log(`Using base path: ${basePath}`);
+    
+    // Try to load header template
+    let headerTemplate;
+    try {
+      headerTemplate = await loadTemplate(`${basePath}partials/header.html`);
+    } catch (error) {
+      console.log("Trying fallback path for header...");
+      headerTemplate = await loadTemplate(`public/partials/header.html`);
+    }
 
-    const headerElement = document.querySelector("#main-header");
+    // Try to load footer template
+    let footerTemplate;
+    try {
+      footerTemplate = await loadTemplate(`${basePath}partials/footer.html`);
+    } catch (error) {
+      console.log("Trying fallback path for footer...");
+      footerTemplate = await loadTemplate(`public/partials/footer.html`);
+    }    const headerElement = document.querySelector("#main-header");
     const footerElement = document.querySelector("#main-footer");
 
-    if (headerElement) {
+    if (headerElement && headerTemplate) {
+      console.log("Rendering header template");
       renderWithTemplate(headerTemplate, headerElement);
       // Initialize hamburger menu functionality after header is loaded
       initHamburgerMenu();
+    } else {
+      console.error("Could not render header template:", 
+                    !headerElement ? "Header element not found" : "Header template not loaded");
     }
-    if (footerElement) {
+    
+    if (footerElement && footerTemplate) {
+      console.log("Rendering footer template");
       renderWithTemplate(footerTemplate, footerElement);
+    } else {
+      console.error("Could not render footer template:", 
+                    !footerElement ? "Footer element not found" : "Footer template not loaded");
     }
     
     return { success: true };
