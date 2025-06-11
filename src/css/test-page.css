@@ -173,6 +173,7 @@ pre {
   height: 30px;
   animation: spin 1.5s linear infinite;
   margin-bottom: 1rem;
+  padding: 10px;
 }
 
 @keyframes spin {
