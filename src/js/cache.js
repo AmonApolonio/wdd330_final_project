@@ -1,11 +1,5 @@
-// cache.js
-// A simple caching mechanism for API responses
-
-/**
- * Cache class to handle storing and retrieving data with expiration
- */
 class Cache {
-  constructor(expirationTime = 3600000) { // Default: 1 hour in milliseconds
+  constructor(expirationTime = 3600000) {
     this.cache = {};
     this.defaultExpirationTime = expirationTime;
   }
@@ -21,8 +15,7 @@ class Cache {
       value,
       expiry: Date.now() + expirationTime
     };
-    
-    // Store in localStorage for persistence across page reloads
+
     try {
       const cacheEntry = {
         value,
@@ -30,7 +23,6 @@ class Cache {
       };
       localStorage.setItem(`cache_${key}`, JSON.stringify(cacheEntry));
     } catch (e) {
-      // If localStorage is full or unavailable, just use memory cache
       console.warn('Could not store in localStorage:', e);
     }
   }
@@ -41,30 +33,26 @@ class Cache {
    * @returns {*} - The cached value or null if not found or expired
    */
   get(key) {
-    // First try memory cache
     const memoryItem = this.cache[key];
     if (memoryItem && memoryItem.expiry > Date.now()) {
       return memoryItem.value;
     }
-    
-    // Try localStorage if not in memory or expired
+
     try {
       const storedItem = localStorage.getItem(`cache_${key}`);
       if (storedItem) {
         const parsed = JSON.parse(storedItem);
         if (parsed.expiry > Date.now()) {
-          // Update memory cache
           this.cache[key] = parsed;
           return parsed.value;
         } else {
-          // Remove expired items
           localStorage.removeItem(`cache_${key}`);
         }
       }
     } catch (e) {
       console.warn('Error retrieving from localStorage:', e);
     }
-    
+
     return null;
   }
 
@@ -87,7 +75,7 @@ class Cache {
   clear() {
     this.cache = {};
     try {
-      // Only clear our cache entries, not all localStorage
+      // this only clear our cache entries, not all localStorage
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key.startsWith('cache_')) {
@@ -100,7 +88,6 @@ class Cache {
   }
 }
 
-// Create and export a shared cache instance
 export const apiCache = new Cache();
 
 /**
@@ -111,21 +98,16 @@ export const apiCache = new Cache();
  * @returns {Function} - Wrapped function with caching
  */
 export function withCache(fn, keyGenerator, expirationTime) {
-  return async function(...args) {
+  return async function (...args) {
     const cacheKey = keyGenerator(...args);
-    
-    // Try to get from cache first
+
     const cachedResult = apiCache.get(cacheKey);
     if (cachedResult !== null) {
       return cachedResult;
     }
-    
-    // If not in cache, call the function
     const result = await fn.apply(this, args);
-    
-    // Store the result in cache
     apiCache.set(cacheKey, result, expirationTime);
-    
+
     return result;
   };
 }

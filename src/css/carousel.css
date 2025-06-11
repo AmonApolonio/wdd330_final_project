@@ -21,14 +21,12 @@
   width: var(--carousel-item-width, 250px);
 }
 
-/* Ensure AnimeCard fills the carousel item */
 .carousel-item .anime-card {
   width: 100%;
   margin: 0;
   box-shadow: none;
 }
 
-/* Style overrides for AnimeCard inside carousel */
 .carousel-item .anime-card:hover {
   transform: translateY(-5px);
   transition: transform 0.3s ease;
@@ -71,7 +69,6 @@
   right: 10px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 992px) {
   .carousel-control {
     width: 32px;
@@ -84,7 +81,7 @@
   .carousel-item .anime-card:hover {
     transform: none;
   }
-  
+
   .carousel-control {
     width: 30px;
     height: 30px;

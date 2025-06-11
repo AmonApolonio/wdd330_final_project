@@ -26,37 +26,28 @@ export async function loadTemplate(path) {
 
 export async function loadHeaderFooter() {
   try {
-    // Create base path that works both in development and production
     let basePath = "/";
     try {
-      // Safely try to access import.meta.env.BASE_URL
       if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) {
         basePath = import.meta.env.BASE_URL;
       } else {
-        // If not available, use a fallback for GitHub Pages
         basePath = "/wdd330_final_project/";
       }
     } catch (e) {
       console.warn("Could not access import.meta.env, using fallback base path:", e);
       basePath = "/wdd330_final_project/";
     }    console.log(`Using base path: ${basePath}`);
-      // Try different path strategies if needed
     let headerTemplate, footerTemplate;
     try {
-      // Load header template
       headerTemplate = await loadTemplate(`${basePath}partials/header.html`);
-      
-      // Load footer template
       footerTemplate = await loadTemplate(`${basePath}partials/footer.html`);
     } catch (e) {
       console.warn("Failed to load templates with base path, trying alternative paths:", e);
       try {
-        // Fallback to direct paths
         headerTemplate = await loadTemplate("/wdd330_final_project/partials/header.html");
         footerTemplate = await loadTemplate("/wdd330_final_project/partials/footer.html");
       } catch (e2) {
         console.error("All attempts to load templates failed:", e2);
-        // Create simple templates as last resort
         headerTemplate = "<div>Header failed to load</div>";
         footerTemplate = "<div>Footer failed to load</div>";
       }
@@ -68,7 +59,6 @@ export async function loadHeaderFooter() {
     if (headerElement && headerTemplate) {
       console.log("Rendering header template");
       renderWithTemplate(headerTemplate, headerElement);
-      // Initialize hamburger menu functionality after header is loaded
       initHamburgerMenu();
     } else {
       console.error("Could not render header template:", 
@@ -96,15 +86,13 @@ function initHamburgerMenu() {
   
   if (menuToggle && mainNav) {
     menuToggle.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent click from closing search
+      e.stopPropagation();
       mainNav.classList.toggle('active');
       menuToggle.classList.toggle('menu-active');
       
-      // Update aria-expanded attribute for accessibility
       const isExpanded = mainNav.classList.contains('active');
       menuToggle.setAttribute('aria-expanded', isExpanded);
       
-      // If search is active, ensure mobile menu is still visible
       if (document.body.classList.contains('search-active') && mainNav.classList.contains('active')) {
         mainNav.style.opacity = '1';
         mainNav.style.visibility = 'visible';
@@ -112,7 +100,6 @@ function initHamburgerMenu() {
       }
     });
     
-    // Close menu when a link is clicked
     const navLinks = mainNav.querySelectorAll('a');
     navLinks.forEach(link => {
       link.addEventListener('click', () => {

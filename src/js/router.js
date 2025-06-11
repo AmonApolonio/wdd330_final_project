@@ -1,21 +1,19 @@
-// Router module for handling navigation
-
 const routes = {
-  '#/home': { 
+  '#/home': {
     viewModule: 'HomeView',
-    fallback: renderHome 
+    fallback: renderHome
   },
-  '#/search': { 
+  '#/search': {
     viewModule: 'SearchView',
-    fallback: renderSearch 
+    fallback: renderSearch
   },
-  '#/detail/:id': { 
+  '#/detail/:id': {
     viewModule: 'DetailView',
-    fallback: renderDetail 
+    fallback: renderDetail
   },
-  '#/my-list': { 
+  '#/my-list': {
     viewModule: 'MyListView',
-    fallback: renderMyList 
+    fallback: renderMyList
   },
   '#/quotes': {
     viewModule: 'QuotesView',
@@ -29,18 +27,15 @@ const routes = {
  * @returns {Object} - The parsed route and parameters
  */
 function parseRoute(hash) {
-  // Default to home if no hash is provided
   if (!hash || hash === '#') {
     return { route: '#/home', param: null };
   }
-  
-  // Handle route with parameter (currently only detail route has a parameter)
+
   if (hash.startsWith('#/detail/')) {
     const id = hash.split('/')[2];
     return { route: '#/detail/:id', param: id };
   }
-  
-  // Return the hash as-is for routes without parameters
+
   return { route: hash, param: null };
 }
 
@@ -48,26 +43,18 @@ function parseRoute(hash) {
  * Main router function that determines which view to render
  */
 function router() {
-  // Parse the current hash
   const { route, param } = parseRoute(window.location.hash);
-  
-  // Get the route handler
   const routeHandler = routes[route];
-  
-  // If route exists in our routes object
+
   if (routeHandler) {
     const { viewModule, fallback } = routeHandler;
-    
-    // Try to use the view module if it exists
+
     if (window[viewModule] && typeof window[viewModule].render === 'function') {
-      // Call the view module's render method with any parameter
       window[viewModule].render(param);
     } else {
-      // Fall back to the default render function if view module isn't available
       fallback(param);
     }
   } else {
-    // Default to home if route is not found
     if (window.HomeView && typeof window.HomeView.render === 'function') {
       window.HomeView.render();
     } else {
@@ -82,18 +69,13 @@ function router() {
  */
 function navigate(hash) {
   if (window.location.hash !== hash) {
-    // Update the URL hash, which will trigger the hashchange event
     window.location.hash = hash;
   } else {
-    // If we're already on this hash, just re-render the route
     router();
   }
 }
 
-// Make navigate function available globally
 window.navigate = navigate;
-
-// Set up event listener for hash changes
 window.addEventListener('hashchange', router);
 
 function renderHome() {
@@ -106,8 +88,7 @@ function renderHome() {
         <p>Loading home view content...</p>
       </section>
     `;
-    
-    // If HomeView is now available (might have loaded after initial check), use it
+
     setTimeout(() => {
       if (window.HomeView && typeof window.HomeView.render === 'function') {
         console.log("Retrying with HomeView after delay");
@@ -122,9 +103,8 @@ function renderSearch() {
   if (appElement) {
     appElement.innerHTML = `
       <section class="search-view">
-        <h1>Search Anime</h1>
+        <h1>Search Anime</h1>        
         <div class="search-results" id="search-results-container">
-          <!-- Search results will be loaded here -->
           <p>Use the search bar above to find anime</p>
         </div>
       </section>
@@ -137,9 +117,8 @@ function renderDetail(id) {
   if (appElement) {
     appElement.innerHTML = `
       <section class="detail-view">
-        <h1>Anime Details</h1>
+        <h1>Anime Details</h1>        
         <div class="anime-detail" id="anime-detail-container" data-id="${id}">
-          <!-- Anime details will be loaded here -->
           <p>Loading anime details...</p>
         </div>
       </section>
@@ -152,9 +131,8 @@ function renderMyList() {
   if (appElement) {
     appElement.innerHTML = `
       <section class="my-list-view">
-        <h1>My Anime List</h1>
+        <h1>My Anime List</h1>        
         <div class="my-list-container" id="my-list-container">
-          <!-- My list will be loaded here -->
           <p>Your saved anime will appear here</p>
         </div>
       </section>

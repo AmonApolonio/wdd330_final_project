@@ -1,7 +1,3 @@
-// SeasonGrid.js
-// Exports SeasonGrid(containerEl, animeList)
-// Renders a responsive grid of AnimeCards (2 columns mobile, 4 desktop)
-
 /**
  * Render a responsive grid of anime cards into the given container.
  * @param {HTMLElement} containerEl - The container element to render into
@@ -10,7 +6,7 @@
  */
 export default function SeasonGrid(containerEl, animeList, createAnimeCard) {
   if (!containerEl) return;
-  // Use provided card creator or fallback to HomeView.createAnimeCard
+
   if (!createAnimeCard && window.HomeView && typeof window.HomeView.createAnimeCard === 'function') {
     createAnimeCard = window.HomeView.createAnimeCard.bind(window.HomeView);
   }
@@ -18,8 +14,7 @@ export default function SeasonGrid(containerEl, animeList, createAnimeCard) {
     containerEl.innerHTML = '<p>Could not render anime cards: no card renderer found.</p>';
     return;
   }
-  // Add grid class
+
   containerEl.classList.add('anime-grid');
-  // Render cards
   containerEl.innerHTML = animeList.map(anime => createAnimeCard(anime)).join('');
 }

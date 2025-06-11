@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>  <meta charset="UTF-8">
+
+<head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.jikan.moe https://yurippe.vercel.app; frame-src https:;">  <title>API Testing</title>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.jikan.moe https://yurippe.vercel.app; frame-src https:;">
+  <title>API Testing</title>
   <link rel="stylesheet" href="./css/style.css" />
   <link rel="stylesheet" href="./css/test-page.css" />
 </head>
+
 <body>
   <a href="./index.html" class="back-link">← Back to Main Site</a>
   <h1>API Testing</h1>
@@ -13,10 +18,10 @@
     <button id="jikan-tab" class="api-tab active">Jikan API</button>
     <button id="quotes-tab" class="api-tab">Anime Quotes API</button>
   </div>
-  
+
   <div id="jikan-section">
     <h2>Jikan API Test</h2>
-  
+
     <div class="test-section">
       <h2>Search Anime</h2>
       <div>
@@ -25,13 +30,13 @@
       </div>
       <div id="search-result"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Currently Airing Anime</h2>
       <button id="seasons-now-button">Get Current Season</button>
       <div id="seasons-result"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Get Anime Details</h2>
       <div>
@@ -40,28 +45,29 @@
       </div>
       <div id="anime-result"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Random Anime</h2>
       <button id="random-anime-button">Get Random Anime</button>
       <div id="random-result"></div>
     </div>
-  </div>  <div id="quotes-section" style="display: none;">
+  </div>
+  <div id="quotes-section" style="display: none;">
     <h2>Anime Quotes API Test</h2>
-    
+
     <div class="test-section">
       <h2>Anime Quotes API Tests</h2>
       <p>Run these tests to verify all Anime Quotes API wrapper functions work correctly.</p>
       <button id="run-quotes-tests" class="primary-btn">Run All Tests</button>
       <div id="quotes-tests-result" class="test-results"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Get All Quotes</h2>
       <button id="all-quotes-button">Get All Quotes</button>
       <div id="all-quotes-result"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Search Quotes by Character</h2>
       <div>
@@ -70,7 +76,7 @@
       </div>
       <div id="character-quotes-result"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Search Quotes by Anime</h2>
       <div>
@@ -79,13 +85,13 @@
       </div>
       <div id="anime-quotes-result"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Random Quote</h2>
       <button id="random-quote-button">Get Random Quote</button>
       <div id="random-quote-result"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Random Quote by Character</h2>
       <div>
@@ -94,7 +100,7 @@
       </div>
       <div id="random-character-quote-result"></div>
     </div>
-    
+
     <div class="test-section">
       <h2>Random Quote by Anime</h2>
       <div>
@@ -104,30 +110,30 @@
       <div id="random-anime-quote-result"></div>
     </div>
   </div>
-    <script type="module">    import { searchAnime, getSeasonsNow, getAnimeFull, getRandomAnime } from './js/api/jikan.js';
-    import { fetchQuotes, getAllQuotes, getRandomQuote, searchQuotesByCharacter, 
-            searchQuotesByAnime, getRandomQuoteByCharacter, getRandomQuoteByAnime } from './js/api/animequotes.js';
+  <script type="module">    import { searchAnime, getSeasonsNow, getAnimeFull, getRandomAnime } from './js/api/jikan.js';
+    import {
+      fetchQuotes, getAllQuotes, getRandomQuote, searchQuotesByCharacter,
+      searchQuotesByAnime, getRandomQuoteByCharacter, getRandomQuoteByAnime
+    } from './js/api/animequotes.js';
     import { testAnimeQuotesAPI } from './js/test-animequotes.js';
-    
-    // Initialize when page loads
+
     document.addEventListener('DOMContentLoaded', () => {
-      
-      // Set up tabs
       setupTabs();
-    });    // Set up the API tabs
+    });
+
     function setupTabs() {
       const jikanTab = document.getElementById('jikan-tab');
       const quotesTab = document.getElementById('quotes-tab');
       const jikanSection = document.getElementById('jikan-section');
       const quotesSection = document.getElementById('quotes-section');
-      
+
       jikanTab.addEventListener('click', () => {
         jikanTab.classList.add('active');
         quotesTab.classList.remove('active');
         jikanSection.style.display = 'block';
         quotesSection.style.display = 'none';
       });
-      
+
       quotesTab.addEventListener('click', () => {
         quotesTab.classList.add('active');
         jikanTab.classList.remove('active');
@@ -135,19 +141,19 @@
         jikanSection.style.display = 'none';
       });
     }
-    
+
     // Search anime
     document.getElementById('search-button').addEventListener('click', async () => {
       const query = document.getElementById('search-input').value.trim();
       const resultDiv = document.getElementById('search-result');
-      
+
       if (!query) {
         resultDiv.innerHTML = '<p class="error">Please enter a search term</p>';
         return;
       }
-      
+
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const result = await searchAnime(query);
         resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
@@ -155,12 +161,12 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-    
+
     // Get current season
     document.getElementById('seasons-now-button').addEventListener('click', async () => {
       const resultDiv = document.getElementById('seasons-result');
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const result = await getSeasonsNow();
         resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
@@ -168,19 +174,19 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-    
+
     // Get anime details
     document.getElementById('get-anime-button').addEventListener('click', async () => {
       const animeId = document.getElementById('anime-id-input').value.trim();
       const resultDiv = document.getElementById('anime-result');
-      
+
       if (!animeId) {
         resultDiv.innerHTML = '<p class="error">Please enter an anime ID</p>';
         return;
       }
-      
+
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const result = await getAnimeFull(animeId);
         resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
@@ -188,12 +194,12 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-    
+
     // Get random anime
     document.getElementById('random-anime-button').addEventListener('click', async () => {
       const resultDiv = document.getElementById('random-result');
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const result = await getRandomAnime();
         resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
@@ -201,20 +207,22 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-      // Anime Quotes API section
+
+    // Anime Quotes API section
     document.getElementById('quotes-tab').addEventListener('click', () => {
       document.getElementById('jikan-section').style.display = 'none';
       document.getElementById('quotes-section').style.display = 'block';
       document.getElementById('jikan-tab').classList.remove('active');
       document.getElementById('quotes-tab').classList.add('active');
     });
-      document.getElementById('jikan-tab').addEventListener('click', () => {
+    document.getElementById('jikan-tab').addEventListener('click', () => {
       document.getElementById('jikan-section').style.display = 'block';
       document.getElementById('quotes-section').style.display = 'none';
       document.getElementById('jikan-tab').classList.add('active');
       document.getElementById('quotes-tab').classList.remove('active');
     });
-      // Run all Anime Quotes API tests
+
+    // Run all Anime Quotes API tests
     document.getElementById('run-quotes-tests').addEventListener('click', async () => {
       const resultDiv = document.getElementById('quotes-tests-result');
       resultDiv.innerHTML = `
@@ -223,10 +231,11 @@
           <p>Running API tests...</p>
         </div>
       `;
-      
+
       try {
         const successful = await testAnimeQuotesAPI();
-        if (successful) {          resultDiv.innerHTML = `
+        if (successful) {
+          resultDiv.innerHTML = `
             <div class="success-message">
               <h3>✅ All tests passed!</h3>
               <p>All Anime Quotes API functions are working correctly with caching enabled.</p>
@@ -249,12 +258,12 @@
         `;
       }
     });
-    
+
     // Get all quotes
     document.getElementById('all-quotes-button').addEventListener('click', async () => {
       const resultDiv = document.getElementById('all-quotes-result');
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const data = await getAllQuotes();
         resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
@@ -262,18 +271,19 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-      // Search quotes by character
+
+    // Search quotes by character
     document.getElementById('character-quotes-button').addEventListener('click', async () => {
       const character = document.getElementById('character-input').value.trim();
       const resultDiv = document.getElementById('character-quotes-result');
-      
+
       if (!character) {
         resultDiv.innerHTML = '<p class="error">Please enter a character name</p>';
         return;
       }
-      
+
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const data = await searchQuotesByCharacter(character);
         resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
@@ -281,18 +291,19 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-      // Search quotes by anime
+
+    // Search quotes by anime
     document.getElementById('anime-quotes-button').addEventListener('click', async () => {
       const anime = document.getElementById('anime-input').value.trim();
       const resultDiv = document.getElementById('anime-quotes-result');
-      
+
       if (!anime) {
         resultDiv.innerHTML = '<p class="error">Please enter an anime title</p>';
         return;
       }
-      
+
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const data = await searchQuotesByAnime(anime);
         resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
@@ -300,11 +311,12 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-      // Get random quote
+
+    // Get random quote
     document.getElementById('random-quote-button').addEventListener('click', async () => {
       const resultDiv = document.getElementById('random-quote-result');
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const data = await getRandomQuote();
         resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
@@ -312,18 +324,19 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-      // Get random quote by character
+
+    // Get random quote by character
     document.getElementById('random-character-quote-button').addEventListener('click', async () => {
       const character = document.getElementById('random-character-input').value.trim();
       const resultDiv = document.getElementById('random-character-quote-result');
-      
+
       if (!character) {
         resultDiv.innerHTML = '<p class="error">Please enter a character name</p>';
         return;
       }
-      
+
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const data = await getRandomQuoteByCharacter(character);
         resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
@@ -331,18 +344,19 @@
         resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
       }
     });
-      // Get random quote by anime
+
+    // Get random quote by anime
     document.getElementById('random-anime-quote-button').addEventListener('click', async () => {
       const anime = document.getElementById('random-anime-input').value.trim();
       const resultDiv = document.getElementById('random-anime-quote-result');
-      
+
       if (!anime) {
         resultDiv.innerHTML = '<p class="error">Please enter an anime title</p>';
         return;
       }
-      
+
       resultDiv.innerHTML = '<p>Loading...</p>';
-      
+
       try {
         const data = await getRandomQuoteByAnime(anime);
         resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
@@ -352,4 +366,5 @@
     });
   </script>
 </body>
+
 </html>

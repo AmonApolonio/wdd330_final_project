@@ -1,5 +1,3 @@
-/* Header and navigation styles */
-
 #main-header {
   background-color: var(--color-bg-secondary);
   box-shadow: var(--box-shadow);
@@ -11,8 +9,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 2rem;
-  position: relative; /* Added for absolute positioned children */
-  min-height: 60px; /* Ensure minimum height for header */
+  position: relative;
+  min-height: 60px;
 }
 
 .logo-container {
@@ -31,9 +29,8 @@
   max-width: 100%;
 }
 
-/* Search bar styling */
 #search-bar-container {
-  position: static; /* Changed to static to allow absolute positioning relative to header */
+  position: static;
   display: flex;
   justify-content: flex-end;
   transition: all 0.3s ease;
@@ -42,7 +39,6 @@
   z-index: 100;
 }
 
-/* Search icon styles */
 #search-icon {
   display: flex;
   align-items: center;
@@ -58,21 +54,20 @@
   z-index: 10;
 }
 
-#search-icon:hover, #menu-toggle:hover {
+#search-icon:hover,
+#menu-toggle:hover {
   background-color: var(--color-hover);
 }
 
-/* Icon SVG styles */
 #search-icon svg {
   width: 20px;
   height: 20px;
   fill: currentColor;
 }
 
-/* Search input styles */
 .search-form {
   position: absolute;
-  left: min(200px, calc(100% * 0.25)); /* Increased space for logo */
+  left: min(200px, calc(100% * 0.25));
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -84,7 +79,7 @@
 }
 
 .search-form.expanded {
-  width: calc(100% - 270px); /* Increased space for logo and search icon */
+  width: calc(100% - 270px);
   opacity: 1;
   box-shadow: var(--box-shadow);
   background-color: var(--color-bg-primary);
@@ -92,8 +87,7 @@
   padding: 0 5px;
 }
 
-/* Hide navigation when search is expanded */
-.search-form.expanded ~ .main-nav {
+.search-form.expanded~.main-nav {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -113,7 +107,6 @@
   box-shadow: var(--box-shadow);
 }
 
-/* Navigation Styles */
 .main-nav {
   flex: 1;
   margin: 0 20px;
@@ -126,21 +119,21 @@
   display: flex;
   list-style: none;
   justify-content: center;
-  gap: min(1rem, 2vw); /* Responsive gap that won't get too large */
-  flex-wrap: nowrap; /* Prevent wrapping */
-  max-width: 700px; /* Limit maximum width of the navigation */
+  gap: min(1rem, 2vw);
+  flex-wrap: nowrap;
+  max-width: 700px;
   margin: 0 auto;
 }
 
 .main-nav li {
   margin: 0;
-  flex: 0 1 auto; /* Don't stretch items on large screens */
+  flex: 0 1 auto;
 }
 
 .main-nav a {
   color: var(--color-text-primary);
   font-weight: 500;
-  padding: 8px min(16px, 2vw); /* Responsive padding that won't get too large */
+  padding: 8px min(16px, 2vw);
   border-radius: var(--border-radius);
   transition: var(--transition);
   white-space: nowrap;
@@ -154,7 +147,6 @@
   background-color: var(--color-accent);
 }
 
-/* API Test link styling */
 .main-nav a[href="/api-test.html"] {
   background-color: var(--color-accent);
 }
@@ -163,7 +155,6 @@
   background-color: var(--color-hover);
 }
 
-/* Hamburger Menu Styles */
 #menu-toggle {
   background: none;
   border: none;
@@ -171,8 +162,8 @@
   padding: 0;
 }
 
-.hamburger-icon, 
-.hamburger-icon::before, 
+.hamburger-icon,
+.hamburger-icon::before,
 .hamburger-icon::after {
   display: block;
   width: 25px;
@@ -182,7 +173,7 @@
   transition: var(--transition);
 }
 
-.hamburger-icon::before, 
+.hamburger-icon::before,
 .hamburger-icon::after {
   content: '';
   position: absolute;
@@ -197,7 +188,6 @@
   top: 8px;
 }
 
-/* Animation for the hamburger icon when active */
 .menu-active .hamburger-icon {
   background-color: transparent;
 }
@@ -210,9 +200,7 @@
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* Global search active state */
 @media screen and (min-width: 769px) {
-  /* Only hide nav on desktop/tablet when search is active */
   body.search-active .main-nav {
     opacity: 0;
     visibility: hidden;
@@ -220,22 +208,20 @@
   }
 }
 
-/* Logo styles when search is expanded */
 body.search-active .logo-container {
   min-width: 50px;
   max-width: 60px;
   transition: min-width 0.3s, max-width 0.3s;
 }
 
-/* Header actions container for search and menu buttons */
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 15px; /* Increased gap between buttons */
+  gap: 15px;
 }
 
 #menu-toggle {
-  display: none; /* Hide by default, show only on mobile */
+  display: none;
   align-items: center;
   justify-content: center;
   width: 40px;
@@ -249,21 +235,19 @@ body.search-active .logo-container {
   z-index: 10;
 }
 
-/* Responsive header styles */
-@media screen and (max-width: 768px) {  
+@media screen and (max-width: 768px) {
   .header-content {
     flex-wrap: wrap;
   }
-  
+
   .logo-container {
     margin-right: auto;
   }
-  
-  /* Show hamburger menu on mobile */
+
   #menu-toggle {
     display: flex;
   }
-  
+
   .main-nav {
     display: none;
     width: 100%;
@@ -280,24 +264,24 @@ body.search-active .logo-container {
     z-index: 50;
     box-shadow: var(--box-shadow);
   }
-  
+
   .main-nav.active {
     display: block;
   }
-  
-  /* Override search active state for mobile */
+
   body.search-active .main-nav.active {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
     display: block;
   }
-  
+
   .main-nav ul {
     flex-direction: column;
     align-items: center;
   }
-    .header-actions {
+
+  .header-actions {
     order: 2;
   }
 }

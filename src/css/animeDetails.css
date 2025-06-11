@@ -1,5 +1,3 @@
-/* Anime detail page specific styles */
-
 .anime-detail-content {
   background-color: var(--color-bg-secondary);
   border-radius: var(--border-radius);
@@ -91,7 +89,7 @@
 .responsive-iframe-container {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  padding-top: 56.25%;
   margin-top: 1rem;
 }
 

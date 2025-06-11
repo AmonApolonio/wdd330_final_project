@@ -61,16 +61,15 @@ export function getAnimeFull(id) {
  * @returns {Promise<Object>} - Top anime results
  */
 export function getTopAnime(options = {}) {
-  // Build query string from options
   const queryParams = [];
-  
+
   if (options.type) queryParams.push(`type=${options.type}`);
   if (options.filter) queryParams.push(`filter=${options.filter}`);
   if (options.page) queryParams.push(`page=${options.page}`);
   if (options.limit) queryParams.push(`limit=${options.limit}`);
-  
+
   const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
-  
+
   return fetchJSON(`${API_BASE_URL}/${API_VERSION}/top/anime${queryString}`);
 }
 
@@ -82,7 +81,7 @@ export function getTopAnime(options = {}) {
 export function getTrendingAnime(limit = 10) {
   return getTopAnime({
     filter: 'bypopularity',
-    limit: Math.min(limit, 25)  // Ensure we don't exceed API limit
+    limit: Math.min(limit, 25)
   });
 }
 
@@ -94,7 +93,7 @@ export function getTrendingAnime(limit = 10) {
 export function getTopAiringAnime(limit = 10) {
   return getTopAnime({
     filter: 'airing',
-    limit: Math.min(limit, 25)  // Ensure we don't exceed API limit
+    limit: Math.min(limit, 25)
   });
 }
 
@@ -106,7 +105,7 @@ export function getTopAiringAnime(limit = 10) {
 export function getUpcomingAnime(limit = 10) {
   return getTopAnime({
     filter: 'upcoming',
-    limit: Math.min(limit, 25)  // Ensure we don't exceed API limit
+    limit: Math.min(limit, 25)
   });
 }
 

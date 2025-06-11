@@ -1,4 +1,3 @@
-/* Base styles, CSS variables, and reset */
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Display:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
@@ -14,7 +13,6 @@
   --transition: all 0.3s ease;
 }
 
-/* Custom scrollbar for better integration with dark theme */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -39,7 +37,6 @@
   padding: 0;
 }
 
-/* Improved focus styles for accessibility */
 button:focus,
 a:focus,
 input:focus,
@@ -49,7 +46,6 @@ textarea:focus {
   outline-offset: 2px;
 }
 
-/* Custom text selection */
 ::selection {
   background-color: rgba(23, 71, 176, 0.4);
   color: var(--color-text-primary);
@@ -76,10 +72,19 @@ a {
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

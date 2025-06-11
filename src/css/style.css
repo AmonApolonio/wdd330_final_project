@@ -1,19 +1,10 @@
-/* Main style file - imports all component CSS files */
-
-/* Import base styles and variables */
 @import 'base.css';
-
-/* Import layout components */
 @import 'header.css';
 @import 'footer.css';
 @import 'layout.css';
-
-/* Import specific component styles */
 @import 'components.css';
 @import 'animeCard.css';
 @import 'carousel.css';
 @import 'animeDetails.css';
 @import 'quoteStyles.css';
-
-/* Import responsive styles */
 @import 'responsive.css';

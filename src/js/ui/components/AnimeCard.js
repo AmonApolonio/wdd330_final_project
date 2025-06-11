@@ -1,7 +1,3 @@
-// AnimeCard.js
-// A reusable component for displaying anime cards throughout the application
-
-// Import getAnimeFull from the API
 import { getAnimeFull } from '../../api/jikan.js';
 
 /**
@@ -10,19 +6,13 @@ import { getAnimeFull } from '../../api/jikan.js';
  * @returns {string} - HTML string for the anime card
  */
 export default function AnimeCard(anime, options = {}) {
-  // Handle different anime data formats (API vs localStorage)
   const imageUrl = anime.images?.jpg?.image_url || anime.image_url || 'https://via.placeholder.com/225x318?text=No+Image';
-  
-  // Use a sensible title (English or default)
-  const title = anime.title_english || anime.title;  
+  const title = anime.title_english || anime.title;
   const isInList = isAnimeInMyList(anime.mal_id);
-  
-  // Combine status and episodes
+
   const episodeText = anime.episodes ? `${anime.episodes} ep` : 'Unknown ep';
   const statusText = anime.status || 'Unknown';
   const statusEpisodes = `${statusText} - ${episodeText}`;
-  
-  // Build the card HTML
   let cardHTML = `
     <div class="anime-card" data-id="${anime.mal_id}" data-status="${anime.status || ''}">
       <div class="anime-card-image">
@@ -63,15 +53,10 @@ export default function AnimeCard(anime, options = {}) {
  */
 export function removeAnimeFromList(animeId) {
   try {
-    // Get current list from localStorage
     const myList = JSON.parse(localStorage.getItem('myAnimeList') || '[]');
-    
-    // Filter out the anime with the given ID
     const updatedList = myList.filter(anime => anime.mal_id !== animeId);
-    
-    // Save back to localStorage
     localStorage.setItem('myAnimeList', JSON.stringify(updatedList));
-    
+
     return true;
   } catch (error) {
     console.error('Error removing anime from list:', error);
@@ -86,15 +71,12 @@ export function removeAnimeFromList(animeId) {
  */
 export function addAnimeToList(anime) {
   try {
-    // Get current list from localStorage
     const myList = JSON.parse(localStorage.getItem('myAnimeList') || '[]');
-    
-    // Check if anime is already in the list
+
     if (myList.some(item => item.mal_id === anime.mal_id)) {
-      return false; // Already in list
+      return false;
     }
-    
-    // Create a simplified version to avoid storing too much data
+
     const animeToSave = {
       mal_id: anime.mal_id,
       title: anime.title_english || anime.title,
@@ -106,13 +88,10 @@ export function addAnimeToList(anime) {
       rank: anime.rank,
       saved_at: new Date().toISOString()
     };
-    
-    // Add to list
+
     myList.push(animeToSave);
-    
-    // Save back to localStorage
     localStorage.setItem('myAnimeList', JSON.stringify(myList));
-    
+
     return true;
   } catch (error) {
     console.error('Error adding anime to list:', error);
@@ -129,17 +108,16 @@ export function toggleAnimeInList(animeOrId) {
   try {
     const animeId = typeof animeOrId === 'object' ? animeOrId.mal_id : animeOrId;
     const isInList = isAnimeInMyList(animeId);
-    
+
     if (isInList) {
       removeAnimeFromList(animeId);
-      return false; // No longer in list
+      return false;
     } else {
-      // If we only have the ID, we need to fetch the anime data
       if (typeof animeOrId === 'object') {
         addAnimeToList(animeOrId);
-        return true; // Now in list
+        return true;
       }
-      return false; // Can't add without anime data
+      return false;
     }
   } catch (error) {
     console.error('Error toggling anime in list:', error);
@@ -157,7 +135,6 @@ export function setupRemoveButtons(callback) {
       const animeId = parseInt(button.dataset.id, 10);
       const success = removeAnimeFromList(animeId);
       if (success) {
-        // If a callback was provided, execute it
         if (typeof callback === 'function') {
           callback();
         }
@@ -176,13 +153,12 @@ export function setupRemoveButtons(callback) {
 export function setupQuickAddButtons(getAnimeData, callback) {
   document.querySelectorAll('.add-button').forEach(button => {
     button.addEventListener('click', async (e) => {
-      e.stopPropagation(); // Prevent card click event
+      e.stopPropagation();
       const animeId = parseInt(button.dataset.id, 10);
       const isInList = isAnimeInMyList(animeId);
       const iconElement = button.querySelector('.button-icon');
-      
+
       if (isInList) {
-        // Remove from list
         const success = removeAnimeFromList(animeId);
         if (success) {
           iconElement.textContent = '+';
@@ -192,13 +168,12 @@ export function setupQuickAddButtons(getAnimeData, callback) {
           }
         }
       } else {
-        // Add to list - we need to get the anime data first
         try {
           let animeData;
           if (typeof getAnimeData === 'function') {
             animeData = await getAnimeData(animeId);
           }
-          
+
           if (animeData) {
             const success = addAnimeToList(animeData);
             if (success) {
@@ -221,10 +196,8 @@ export function setupQuickAddButtons(getAnimeData, callback) {
 /**
  * Set up event listeners for clickable anime cards
  */
-export function setupAnimeCardClickEvents() {
-  document.querySelectorAll('.anime-card').forEach(card => {
+export function setupAnimeCardClickEvents() {  document.querySelectorAll('.anime-card').forEach(card => {
     card.addEventListener('click', (e) => {
-      // Only navigate if not clicking on a button
       if (!e.target.closest('button') && !e.target.closest('.quick-add-button')) {
         const animeId = card.dataset.id;
         window.location.hash = `#/detail/${animeId}`;
@@ -241,13 +214,10 @@ export function setupAnimeCardClickEvents() {
  * @param {Function} options.updateCallback - Optional callback after anime is added/removed 
  */
 export function setupAnimeCardInteractivity(options = {}) {
-  // Make cards clickable to navigate to details page
   setupAnimeCardClickEvents();
-  
-  // Use the provided callback or default to the standard API fetch
+
   const getAnimeDataFn = options.getAnimeDataCallback || (async (animeId) => {
     try {
-      // Get the full anime data for saving
       const response = await getAnimeFull(animeId);
       if (response && response.data) {
         return response.data;
@@ -258,8 +228,7 @@ export function setupAnimeCardInteractivity(options = {}) {
       return null;
     }
   });
-  
-  // Set up quick add/remove buttons with the appropriate callback
+
   setupQuickAddButtons(getAnimeDataFn, options.updateCallback);
 }
 
@@ -270,10 +239,8 @@ export function setupAnimeCardInteractivity(options = {}) {
  */
 export function isAnimeInMyList(animeId) {
   try {
-    // Make sure we're working with a number for comparison
     const animeIdNum = Number(animeId);
     const myList = JSON.parse(localStorage.getItem('myAnimeList') || '[]');
-    // Use triple equals to ensure type matching
     const isInList = myList.some(anime => Number(anime.mal_id) === animeIdNum);
     return isInList;
   } catch (error) {

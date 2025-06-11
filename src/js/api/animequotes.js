@@ -6,66 +6,51 @@ import { withCache } from "../cache.js";
 
 const API_BASE_URL = "https://yurippe.vercel.app/api";
 
-// Configure cache durations (in milliseconds)
 const CACHE_DURATION = {
-  DEFAULT: 60 * 60 * 1000, // 1 hour
-  SHORT: 10 * 60 * 1000,   // 10 minutes
-  LONG: 24 * 60 * 60 * 1000 // 24 hours
+  DEFAULT: 60 * 60 * 1000,
+  SHORT: 10 * 60 * 1000,
+  LONG: 24 * 60 * 60 * 1000
 };
 
 /**
- * Fetch quotes with optional filters
  * @param {Object} options - Filter options
  * @param {string|string[]} [options.character] - Character name(s)
  * @param {string|string[]} [options.show] - Anime show name(s)
- * @param {boolean} [options.random] - Whether to get a random quote (number of quotes to return)
+ * @param {boolean} [options.random] - Whether to get a random quote
  * @param {number} [options.page] - Page number for pagination
- * @returns {Promise<Object>} - The quotes data
  */
 export function fetchQuotes(options = {}) {
   const { character, show, random, page } = options;
-  
-  // Build the endpoint path (this API uses query parameters for everything)
+
   const endpoint = '/quotes';
-  
-  // Build query parameters
   const queryParams = [];
-  
+
   if (character) {
-    // Handle arrays for multiple characters
     if (Array.isArray(character)) {
       queryParams.push(`character=${encodeURIComponent(character.join(','))}`);
     } else {
       queryParams.push(`character=${encodeURIComponent(character)}`);
     }
   }
-  
+
   if (show) {
-    // Handle arrays for multiple shows
     if (Array.isArray(show)) {
       queryParams.push(`show=${encodeURIComponent(show.join(','))}`);
     } else {
       queryParams.push(`show=${encodeURIComponent(show)}`);
     }
   }
-  
-  // Handle random quotes
   if (random) {
-    // For this API, random=1 means get 1 random quote
     queryParams.push(`random=1`);
   }
-  
-  // Add pagination for non-random quotes (if supported by the API)
   if (!random && page) {
     queryParams.push(`page=${page}`);
   }
-  
-  // Build the full URL
   let url = `${API_BASE_URL}${endpoint}`;
   if (queryParams.length > 0) {
     url += `?${queryParams.join('&')}`;
   }
-  
+
   return fetchJSON(url);
 }
 
@@ -75,22 +60,18 @@ export function fetchQuotes(options = {}) {
  */
 function _getRandomQuote() {
   return fetchQuotes({ random: true }).then(response => {
-    // Ensure consistent response format
-    // If response is an array or has a data property containing array, get first item
     if (Array.isArray(response)) {
       return response[0];
     } else if (response && response.data && Array.isArray(response.data)) {
       return response.data[0];
     }
-    // Otherwise, return the response as-is assuming it's a quote object
     return response;
   });
 }
 
-// Random quotes are cached for a short time only
 export const getRandomQuote = withCache(
   _getRandomQuote,
-  () => `random_quote_${Date.now().toString().slice(0, -4)}`, // Cache key changes every 10 seconds
+  () => `random_quote_${Date.now().toString().slice(0, -4)}`,
   CACHE_DURATION.SHORT
 );
 
@@ -101,7 +82,6 @@ export const getRandomQuote = withCache(
  */
 function _getRandomQuoteByCharacter(character) {
   return fetchQuotes({ random: true, character }).then(response => {
-    // Ensure consistent response format
     if (Array.isArray(response)) {
       return response[0];
     } else if (response && response.data && Array.isArray(response.data)) {
@@ -124,7 +104,6 @@ export const getRandomQuoteByCharacter = withCache(
  */
 function _getRandomQuoteByAnime(show) {
   return fetchQuotes({ random: true, show }).then(response => {
-    // Ensure consistent response format
     if (Array.isArray(response)) {
       return response[0];
     } else if (response && response.data && Array.isArray(response.data)) {

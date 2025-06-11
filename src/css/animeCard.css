@@ -1,6 +1,3 @@
-/* animeCard.css */
-/* Styles for the anime card component */
-
 .anime-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -40,7 +37,6 @@
   object-fit: cover;
 }
 
-/* Status badge */
 .anime-status {
   position: absolute;
   top: 8px;
@@ -140,7 +136,6 @@
   flex: 1;
 }
 
-/* Add button icons */
 .button-icon {
   display: inline-block;
   font-weight: bold;
@@ -148,7 +143,6 @@
   line-height: 1;
 }
 
-/* Responsive styles for smaller screens */
 @media screen and (max-width: 1200px) {
   .anime-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -171,7 +165,6 @@
   }
 }
 
-/* Status badge colors - using consistent palette colors */
 .anime-card[data-status="Finished Airing"] .anime-status,
 .anime-card[data-status="Completed"] .anime-status,
 .anime-card[data-status="Currently Airing"] .anime-status,
@@ -182,7 +175,6 @@
   border-color: var(--color-border);
 }
 
-/* Animation effects */
 @keyframes pulse {
   0% { transform: scale(1); box-shadow: var(--box-shadow); }
   50% { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
@@ -205,7 +197,6 @@
   100% { box-shadow: 0 0 5px rgba(23, 71, 176, 0.5); }
 }
 
-/* Detail view button animations */
 #save-anime-btn {
   transition: var(--transition);
   padding: 0.8rem 3rem;
@@ -256,7 +247,6 @@
   animation: pulse 0.3s ease;
 }
 
-/* Notification animation */
 .notification {
   position: fixed;
   bottom: 20px;
