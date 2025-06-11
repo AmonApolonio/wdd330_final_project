@@ -147,14 +147,6 @@
   background-color: var(--color-accent);
 }
 
-.main-nav a[href="/api-test.html"] {
-  background-color: var(--color-accent);
-}
-
-.main-nav a[href="/api-test.html"]:hover {
-  background-color: var(--color-hover);
-}
-
 #menu-toggle {
   background: none;
   border: none;
